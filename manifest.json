@@ -1,24 +1,30 @@
 {
-  "name": "Lisbon Marathon Training",
-  "short_name": "LM Training",
+  "name": "LMT — Lisbon Marathon Training",
+  "short_name": "LMT",
   "description": "22-week training plan for the EDP Lisbon Marathon 2026",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#087E8B",
+  "theme_color": "#E8501A",
   "orientation": "portrait-primary",
   "icons": [
+    {
+      "src": "logo-2.png",
+      "sizes": "2000x2000",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
