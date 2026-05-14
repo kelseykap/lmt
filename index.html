@@ -243,6 +243,7 @@ body{padding-bottom:env(safe-area-inset-bottom);}
 <div class="top-nav">
   <button class="top-tab active" onclick="showTab('plan')">Plan</button>
   <button class="top-tab" onclick="showTab('strength')">Strength</button>
+  <span id="sync-status" style="margin-left:auto;padding:0 16px;font-size:11px;color:#ccc;align-self:center;font-family:Helvetica,Arial,sans-serif;letter-spacing:0.05em;"></span>
 </div>
 <div id="strava-bar" class="strava-bar" style="display:none;"></div>
 <div id="phase-nav-row" style="background:#F5F5F5;border-bottom:1px solid #e8e8e8;">
@@ -599,7 +600,84 @@ const DEFAULT_STR = {
 
 let state = {};
 try { state = JSON.parse(localStorage.getItem('lm26_v5') || '{}'); } catch(e){}
-function save(){ try{ localStorage.setItem('lm26_v5', JSON.stringify(state)); }catch(e){} }
+
+// ── SUPABASE SYNC ─────────────────────────────────────────────────────────────
+const SB_URL = 'https://mrdrwazrddwfhjkfxjhu.supabase.co';
+const SB_KEY = 'sb_publishable_3FTtCLvgj2UJonnJKUTWLg_rb_I4_5V';
+const SB_HEADERS = {
+  'Content-Type': 'application/json',
+  'apikey': SB_KEY,
+  'Authorization': `Bearer ${SB_KEY}`,
+  'Prefer': 'return=minimal',
+};
+
+let syncTimer = null;
+let syncStatus = 'idle'; // idle | saving | saved | error | loading
+
+function setSyncStatus(s, msg){
+  syncStatus = s;
+  const el = document.getElementById('sync-status');
+  if(!el) return;
+  const icons = {idle:'', saving:'↑', saved:'✓', error:'!', loading:'↓'};
+  const colors = {idle:'#ccc', saving:'#aaa', saved:'#087E8B', error:'#E8501A', loading:'#aaa'};
+  el.textContent = icons[s] + (msg ? ' '+msg : '');
+  el.style.color = colors[s];
+}
+
+async function pushToSupabase(){
+  setSyncStatus('saving');
+  try{
+    const res = await fetch(`${SB_URL}/rest/v1/training_log?id=eq.main`, {
+      method:'PATCH',
+      headers:{...SB_HEADERS, 'Content-Type':'application/json'},
+      body: JSON.stringify({data: state, updated_at: new Date().toISOString()}),
+    });
+    if(!res.ok) throw new Error(res.status);
+    setSyncStatus('saved');
+    setTimeout(()=>setSyncStatus('idle'), 2000);
+  } catch(e){
+    setSyncStatus('error','sync failed');
+    setTimeout(()=>setSyncStatus('idle'), 4000);
+  }
+}
+
+async function pullFromSupabase(){
+  setSyncStatus('loading');
+  try{
+    const res = await fetch(`${SB_URL}/rest/v1/training_log?id=eq.main&select=data,updated_at`, {
+      headers: {'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`},
+    });
+    if(!res.ok) throw new Error(res.status);
+    const rows = await res.json();
+    if(!rows.length) { setSyncStatus('idle'); return false; }
+
+    const remote = rows[0].data || {};
+    const remoteTime = new Date(rows[0].updated_at||0).getTime();
+    const localTime = state._savedAt || 0;
+
+    if(remoteTime > localTime){
+      // Remote is newer — merge into state
+      state = {...state, ...remote};
+      localStorage.setItem('lm26_v5', JSON.stringify(state));
+      setSyncStatus('idle');
+      return true; // caller should re-render
+    }
+    setSyncStatus('idle');
+    return false;
+  } catch(e){
+    setSyncStatus('error','offline');
+    setTimeout(()=>setSyncStatus('idle'), 3000);
+    return false;
+  }
+}
+
+function save(){
+  state._savedAt = Date.now();
+  try{ localStorage.setItem('lm26_v5', JSON.stringify(state)); } catch(e){}
+  // Debounce remote push — wait 1.5s after last change
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(pushToSupabase, 1500);
+}
 
 // initialise strength state from defaults if not present
 if(!state.strA) state.strA = [...DEFAULT_STR.A];
@@ -1344,18 +1422,7 @@ const QUOTES = [
 
 // ── HEADER RENDER ────────────────────────────────────────────────────────────
 // LMT logo SVG — bold retro serif, orange
-const LOGO_SVG = `<svg viewBox="0 0 220 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- L -->
-  <path d="M4 4 L4 56 L36 56 L36 47 L14 47 L14 4 Z" fill="#E8501A"/>
-  <path d="M4 4 Q4 4 14 4 L14 47 Q8 47 4 56 Q4 40 4 4Z" fill="#E8501A"/>
-  <!-- M -->
-  <path d="M42 4 L42 56 L52 56 L52 22 L66 44 L80 22 L80 56 L90 56 L90 4 L78 4 L66 26 L54 4 Z" fill="#E8501A"/>
-  <path d="M42 4 Q52 4 52 22 L52 56 L42 56 Z" fill="#E8501A"/>
-  <path d="M80 4 Q90 4 90 4 L90 56 L80 56 L80 22 Z" fill="#E8501A"/>
-  <!-- T -->
-  <path d="M96 4 L96 13 L118 13 L118 56 L128 56 L128 13 L150 13 L150 4 Z" fill="#E8501A"/>
-  <path d="M96 4 L150 4 Q150 13 128 13 L128 56 L118 56 L118 13 Q96 13 96 4Z" fill="#E8501A"/>
-</svg>`;
+const LOGO_SVG = `<img src="logo-2.png" alt="LMT" style="height:52px;width:52px;object-fit:contain;border-radius:6px;">`;
 
 function renderDailyQuote(){
   const idx = new Date().getDate() % QUOTES.length;
@@ -1406,7 +1473,20 @@ renderPhase();
 renderDailyQuote();
 setTimeout(initScrollSpy, 200);
 
-// scroll to current week done in init above
+// Pull from Supabase on load — if remote is newer, re-render
+pullFromSupabase().then(updated => {
+  if(updated){
+    renderPhase();
+    renderDailyQuote();
+  }
+});
+
+// Also re-sync when tab becomes visible (e.g. switching back from another app)
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'visible'){
+    pullFromSupabase().then(updated => { if(updated){ renderPhase(); } });
+  }
+});
 
 // ── SERVICE WORKER ───────────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
