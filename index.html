@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LM Training">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Lisbon Marathon 2026 Training Plan">
+<link rel="manifest" href="manifest.json">
+<title>Lisbon Marathon Training Plan 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;font-size:14px;}
+
+/* ── PALETTE ──
+  teal   #087E8B
+  coral  #E8501A
+  dark   #3C3C3C
+  light  #F5F5F5
+  mauve  #C1839F
+*/
+
+/* ══════════════════════════════════════════════
+   STICKY HEADER
+══════════════════════════════════════════════ */
+.sticky-top{position:sticky;top:0;z-index:300;background:#fff;box-shadow:0 2px 0 #e8e8e8;}
+.header{width:100%;overflow:hidden;position:relative;background:#fff;}
+
+/* header — logo left, quote right */
+.hdr-top-strip{height:5px;background:#E8501A;width:100%;}
+.hdr-body{padding:20px 28px 20px;max-width:960px;display:flex;align-items:center;gap:28px;}
+.hdr-logo{flex-shrink:0;display:flex;align-items:center;}
+.hdr-logo svg{height:44px;width:auto;display:block;}
+.hdr-right{flex:1;min-width:0;}
+.hdr-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.22em;font-family:Helvetica,Arial,sans-serif;color:#ccc;display:block;margin-bottom:5px;}
+.hdr-title .dim{color:#e0e0e0;}
+.hdr-quote-text{
+  font-family:Helvetica,Arial,sans-serif;
+  font-weight:900;
+  font-size:16px;
+  line-height:1.15;
+  color:#aaa;
+  display:block;
+}
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .hdr-body{padding:14px 16px;gap:16px;}
+  .hdr-logo svg{height:34px;}
+  .hdr-quote-text{font-size:13px;}
+  .content{padding-left:16px;padding-right:16px;}
+  #phase-nav-row > div{padding-left:16px;padding-right:16px;}
+  .week-hdr{padding:10px 12px;}
+  .day-row{grid-template-columns:36px auto 1fr auto 26px;padding:7px 12px;gap:4px;}
+  .day-label{font-size:11px;}
+  .tag{font-size:10px;padding:2px 6px;}
+  .week-title{font-size:13px;}
+  .top-tab{padding:10px 12px;font-size:12px;}
+  .phase-btn{padding:8px 10px;font-size:11px;}
+  .content{padding-top:14px;}
+  .str-grid{grid-template-columns:1fr!important;}
+  .add-dropdown{right:-8px;min-width:180px;}
+  .strength-page{padding:14px 16px;}
+}
+body{padding-bottom:env(safe-area-inset-bottom);}
+.sticky-top{padding-top:env(safe-area-inset-top);}
+@media(hover:none){
+  .add-btn{width:28px;height:28px;}
+  .tag-removable{padding:3px 10px;}
+  .phase-btn,.top-tab{min-height:40px;}
+}
+
+.top-nav{display:flex;background:#fff;border-bottom:1px solid #e8e8e8;padding:0 28px;}
+.top-tab{padding:10px 18px;font-size:13px;cursor:pointer;border:none;background:none;color:#aaa;border-bottom:2px solid transparent;white-space:nowrap;font-family:inherit;letter-spacing:0.01em;}
+.top-tab.active{color:#3C3C3C;border-bottom-color:#087E8B;font-weight:600;}
+
+.phase-nav{display:flex;gap:0;background:transparent;overflow-x:auto;}
+.phase-btn{padding:8px 14px;font-size:12px;cursor:pointer;border:none;background:none;color:#aaa;border-bottom:2px solid transparent;white-space:nowrap;font-family:inherit;}
+.phase-btn.active{color:#3C3C3C;border-bottom-color:#087E8B;font-weight:600;}
+.phasebar-countdown{font-size:11px;font-weight:700;font-family:Helvetica,Arial,sans-serif;white-space:nowrap;letter-spacing:0.08em;}
+.phasebar-countdown .cdnum{color:#087E8B;font-size:11px;}
+.phasebar-countdown .cddtg{color:#ccc;font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:0.12em;}
+
+.content{padding:20px 28px;max-width:960px;}
+.phase-section{margin-bottom:36px;}
+.phase-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#ccc;margin-bottom:10px;}
+
+/* phase-note — background style, no border, blends with page bg */
+.phase-note{background:#F5F5F5;border:none;border-left:3px solid #087E8B;border-radius:0;padding:11px 16px;font-size:13px;color:#777;line-height:1.65;margin-bottom:20px;position:relative;}
+.phase-note strong{color:#3C3C3C;font-weight:600;}
+.phase-note-display{cursor:pointer;}
+.phase-note-display:hover{color:#3C3C3C;}
+.phase-note-edit{display:none;width:100%;font-size:13px;font-family:inherit;color:#555;line-height:1.65;border:none;outline:none;background:transparent;resize:none;min-height:60px;}
+.phase-note-actions{margin-top:6px;display:flex;gap:6px;}
+
+.week{background:#fff;border:1px solid #e8e8e8;border-radius:8px;margin-bottom:6px;overflow:visible;}
+.week.current-week{border-color:#087E8B;box-shadow:0 0 0 2px rgba(8,126,139,0.12);}
+.week-hdr{padding:11px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;border-radius:8px;}
+.week-hdr:hover{background:#fafafa;}
+.week-title{font-size:13px;font-weight:600;color:#3C3C3C;}
+.week-date{font-size:12px;color:#bbb;font-weight:400;margin-left:7px;}
+.current-label{font-size:10px;font-weight:700;background:#087E8B;color:#fff;padding:2px 7px;border-radius:99px;margin-left:8px;vertical-align:middle;letter-spacing:0.03em;}
+.km-badge{font-size:12px;font-weight:500;padding:3px 9px;border-radius:6px;}
+.chevron{font-size:11px;color:#ccc;transition:transform 0.2s;display:inline-block;margin-left:8px;}
+.chevron.open{transform:rotate(180deg);}
+.week-body{display:none;border-top:1px solid #f0f0f0;border-radius:0 0 8px 8px;overflow:visible;}
+.week-body.open{display:block;}
+
+/* day row */
+.day-row{display:grid;grid-template-columns:46px auto 1fr auto 28px;gap:6px;padding:8px 14px;align-items:center;border-bottom:1px solid #f8f8f8;position:relative;}
+.day-row:last-child{border-bottom:none;}
+.day-row.past{background:#fafafa;}
+.day-label{font-size:12px;color:#ccc;font-weight:600;}
+.tags-area{display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
+.day-main{min-width:0;}
+.day-text-display{font-size:13px;color:#3C3C3C;cursor:pointer;border-bottom:1px dashed transparent;transition:border-color 0.15s;word-break:break-word;line-height:1.4;display:inline;}
+.day-text-display:hover{border-bottom-color:#ccc;}
+.day-text-empty{color:transparent;font-style:italic;font-size:12px;display:inline;}
+.day-row:hover .day-text-empty{color:#ccc;}
+.day-text-input{font-size:13px;color:#3C3C3C;border:none;border-bottom:1px solid #aaa;background:transparent;outline:none;font-family:inherit;width:100%;resize:none;height:22px;line-height:22px;padding:0;overflow:hidden;display:block;}
+.day-row.drag-target-day{background:#f0fafb;outline:2px dashed #087E8B;outline-offset:-2px;border-radius:4px;}
+.missed-label{font-size:9px;font-weight:700;color:#E8501A;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;padding-right:6px;opacity:0.7;}
+.day-row.missed-run .t-easy,.day-row.missed-run .t-workout,.day-row.missed-run .t-ml,.day-row.missed-run .t-long{background:#ebebeb !important;color:#bbb !important;}
+.note-preview{font-size:11px;color:#bbb;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;line-height:1.3;}
+.note-preview:hover{color:#777;}
+.note-add{color:transparent;font-style:italic;transition:color 0.15s;}
+.day-row:hover .note-add{color:#ccc;}
+.note-add:hover{color:#999 !important;}
+
+/* tags — run types: tonal teal; activity types: individual palette colours */
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap;vertical-align:middle;letter-spacing:0.01em;}
+/* run types — tonal teal from light → dark */
+.t-easy{background:#d4eef0;color:#087E8B;}
+.t-ml{background:#8fc9cf;color:#fff;}
+.t-workout{background:#087E8B;color:#fff;}
+.t-long{background:#054f56;color:#d4eef0;}
+/* strength */
+.t-sa,.t-sb,.t-sl,.t-strength{background:#f0e0e8;color:#9c5072;}
+/* activities */
+.t-yoga{background:#f0e0e8;color:#C1839F;}
+.t-hike{background:#ede0e8;color:#9c5072;}
+.t-swim{background:#cce8f0;color:#087E8B;}
+.t-pilates{background:#fde5dc;color:#E8501A;}
+.t-padel{background:#fde8df;color:#b83c14;}
+.t-rest{background:#ebebeb;color:#999;}
+.t-race{background:#E8501A;color:#fff;}
+
+/* km input */
+.km-col{display:flex;align-items:center;justify-content:flex-end;}
+.km-actual-input{width:40px;font-size:11px;border:none;border-bottom:1px solid #e0e0e0;background:transparent;outline:none;font-family:inherit;color:#3C3C3C;padding:1px 2px;text-align:right;}
+.km-actual-input:focus{border-bottom-color:#087E8B;}
+.km-actual-input::placeholder{color:#ddd;}
+
+/* add button */
+.add-btn{background:none;border:1px solid #e0e0e0;border-radius:99px;width:22px;height:22px;font-size:14px;line-height:1;cursor:pointer;color:#ccc;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;}
+.add-btn:hover{border-color:#087E8B;color:#087E8B;}
+
+/* dropdown */
+.add-dropdown{position:absolute;right:0;top:28px;background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:6px;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,0.08);min-width:200px;}
+.drop-section{font-size:10px;color:#bbb;text-transform:uppercase;letter-spacing:0.06em;padding:4px 6px 2px;font-weight:700;}
+.drop-pills{display:flex;flex-wrap:wrap;gap:4px;padding:0 4px 6px;}
+.drop-pill{padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all 0.12s;}
+.drop-pill:hover{filter:brightness(0.93);}
+.dp-easy{background:#d4eef0;color:#087E8B;}
+.dp-ml{background:#8fc9cf;color:#fff;}
+.dp-workout{background:#087E8B;color:#fff;}
+.dp-long{background:#054f56;color:#d4eef0;}
+.dp-strength{background:#f0e0e8;color:#9c5072;}
+.dp-yoga{background:#f0e0e8;color:#C1839F;}
+.dp-hike{background:#ede0e8;color:#9c5072;}
+.dp-swim{background:#cce8f0;color:#087E8B;}
+.dp-pilates{background:#fde5dc;color:#E8501A;}
+.dp-padel{background:#fde8df;color:#b83c14;}
+.dp-rest{background:#ebebeb;color:#999;}
+.drop-pill.selected{outline:2px solid currentColor;outline-offset:1px;}
+
+.tag-removable{cursor:pointer;position:relative;}
+.tag-removable:hover::after{content:'×';position:absolute;right:-2px;top:-4px;font-size:9px;background:#3C3C3C;color:#fff;border-radius:99px;width:12px;height:12px;display:flex;align-items:center;justify-content:center;line-height:12px;text-align:center;}
+
+.note-panel{display:none;padding:0 14px 12px 14px;background:#fafafa;border-top:1px solid #f0f0f0;}
+.note-panel.open{display:block;}
+.note-panel textarea{width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:7px 10px;font-size:12px;font-family:inherit;color:#3C3C3C;resize:vertical;min-height:56px;background:#fff;outline:none;}
+.note-panel textarea:focus{border-color:#087E8B;}
+.note-panel textarea::placeholder{color:#ccc;}
+.note-actions{display:flex;gap:8px;margin-top:5px;align-items:center;}
+.btn-save{font-size:11px;color:#fff;background:#087E8B;border:none;border-radius:5px;padding:4px 12px;cursor:pointer;font-family:inherit;font-weight:600;}
+.btn-save:hover{background:#065f69;}
+.btn-discard{font-size:11px;color:#bbb;background:none;border:1px solid #e8e8e8;border-radius:5px;padding:3px 10px;cursor:pointer;font-family:inherit;}
+.btn-discard:hover{color:#777;border-color:#aaa;}
+.btn-delete-note{font-size:11px;color:#E8501A;background:none;border:none;cursor:pointer;font-family:inherit;margin-left:auto;}
+.btn-delete-note:hover{color:#cc2a2f;}
+.week-progress{font-size:11px;color:#ccc;margin-left:8px;}
+.done-count{color:#087E8B;font-weight:600;}
+.km-badge-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+.km-actual-badge{font-size:11px;font-weight:600;color:#087E8B;}
+.km-planned-line{font-size:10px;color:#ccc;}
+
+/* strength tab */
+.strength-page{padding:20px 28px;display:none;}
+.str-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:100%;box-sizing:border-box;}
+@container(max-width:900px){.str-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:960px){.str-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:500px){.str-grid{grid-template-columns:1fr;}}
+.str-card{background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:14px 16px;min-height:200px;display:flex;flex-direction:column;}
+.str-card.drag-over{border-color:#087E8B;background:#f0fafb;}
+.str-card h2{font-size:13px;font-weight:700;margin-bottom:12px;color:#3C3C3C;letter-spacing:0.01em;}
+.str-items{flex:1;}
+.str-item{display:flex;align-items:flex-start;gap:6px;margin-bottom:7px;cursor:grab;user-select:none;padding:3px 4px;border-radius:4px;transition:background 0.1s;}
+.str-item:active{cursor:grabbing;}
+.str-item.dragging{opacity:0.4;background:#f0fafb;}
+.str-item.drag-target{border-top:2px solid #087E8B;}
+.str-drag-handle{color:#ddd;font-size:12px;padding-top:1px;flex-shrink:0;cursor:grab;}
+.str-item-text{font-size:13px;color:#3C3C3C;flex:1;line-height:1.45;cursor:pointer;border-bottom:1px dashed transparent;transition:border-color 0.15s;min-width:0;}
+.str-item-text:hover{border-bottom-color:#ccc;}
+.str-item-input{font-size:13px;color:#3C3C3C;border:none;border-bottom:1px solid #aaa;background:transparent;outline:none;font-family:inherit;width:100%;}
+.str-del{background:none;border:none;cursor:pointer;color:#ddd;font-size:16px;line-height:1;padding:0 2px;transition:color 0.15s;flex-shrink:0;}
+.str-del:hover{color:#E8501A;}
+.str-card-footer{display:flex;justify-content:flex-end;margin-top:8px;}
+.add-exercise-row{display:flex;gap:6px;margin-top:6px;}
+.add-exercise-row input{flex:1;font-size:13px;border:1px solid #e8e8e8;border-radius:6px;padding:5px 10px;font-family:inherit;outline:none;color:#3C3C3C;}
+.add-exercise-row input:focus{border-color:#087E8B;}
+.add-exercise-row button{font-size:12px;background:#F5F5F5;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;color:#777;font-family:inherit;}
+.add-exercise-row button:hover{background:#e8e8e8;}
+.str-add-btn{background:none;border:1px solid #e0e0e0;border-radius:99px;width:22px;height:22px;font-size:16px;line-height:1;cursor:pointer;color:#ccc;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.str-add-btn:hover{border-color:#087E8B;color:#087E8B;}
+
+/* strava */
+.strava-bar{display:flex;align-items:center;gap:10px;padding:7px 28px;background:#fff;border-bottom:1px solid #e8e8e8;font-size:12px;}
+.strava-btn{background:#E8501A;color:#fff;border:none;border-radius:5px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.strava-btn:hover{background:#e04448;}
+.strava-status{color:#bbb;font-size:12px;}
+.strava-ok{color:#087E8B;font-weight:600;}
+.strava-err{color:#E8501A;}
+</style>
+</head>
+<body>
+
+<div class="sticky-top" id="stickyTop">
+<div class="header">
+</div>
+<div class="top-nav">
+  <button class="top-tab active" onclick="showTab('plan')">Plan</button>
+  <button class="top-tab" onclick="showTab('strength')">Strength</button>
+</div>
+<div id="strava-bar" class="strava-bar" style="display:none;"></div>
+<div id="phase-nav-row" style="background:#F5F5F5;border-bottom:1px solid #e8e8e8;">
+  <div style="max-width:960px;display:flex;align-items:center;padding:0 28px;">
+    <div class="phase-nav" id="phaseNav" style="flex:1;display:none;padding:0;"></div>
+    <div id="countdown-strip" style="display:none;white-space:nowrap;flex-shrink:0;padding-left:16px;"></div>
+  </div>
+</div>
+</div>
+
+<!-- PLAN TAB -->
+<div id="tab-plan">
+  <div class="content" id="content"></div>
+</div>
+
+<!-- STRENGTH TAB -->
+<div id="tab-strength" class="strength-page">
+  <div class="str-grid" id="strGrid"></div>
+</div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────────
+
+const PHASES = [
+{label:'Phase 1 — Base',shortLabel:'Base (w1–6)',
+note:'<strong>Goal:</strong> Adapt to road load. Build mileage gradually. Keep strength consistent. Nearly all running at easy/conversational pace. Weeks 3–4 are travel — hike only.',
+weeks:[
+{n:1,date:'11 May',km:'45–50',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'3×10 min threshold'},
+  {d:'Wed',tag:'easy',t:'12 km easy'},
+  {d:'Thu',tag:'ml',t:'14 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'18 km long easy'},
+]},
+{n:2,date:'18 May',km:'50–55',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'6×800m'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'14 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'22 km long easy'},
+]},
+{n:3,date:'25 May',km:'8–10',travel:true,days:[
+  {d:'Mon',tag:'hike',t:'Hike'},
+  {d:'Tue',tag:'hike',t:'Hike'},
+  {d:'Wed',tag:'hike',t:'Hike or rest'},
+  {d:'Thu',tag:'hike',t:'Hike'},
+  {d:'Fri',tag:'hike',t:'Hike'},
+  {d:'Sat',tag:'hike',t:'Hike'},
+  {d:'Sun',tag:'hike',t:'Hike'},
+]},
+{n:4,date:'1 Jun',km:'40–45',travel:true,days:[
+  {d:'Mon',tag:'hike',t:'Hike'},
+  {d:'Tue',tag:'hike',t:'Hike'},
+  {d:'Wed',tag:'easy',t:'8 km easy — return to running'},
+  {d:'Thu',tag:'ml',t:'12 km medium-long easy'},
+  {d:'Fri',tag:'sa',t:'Strength A (lighter)'},
+  {d:'Sat',tag:'easy',t:'8–10 km easy'},
+  {d:'Sun',tag:'long',t:'20 km long easy'},
+]},
+{n:5,date:'8 Jun',km:'55–60',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'5×1 km threshold'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'14 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'24 km long easy'},
+]},
+{n:6,date:'15 Jun',km:'60',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'2×5 km MP'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'16 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'26 km long easy'},
+]},
+]},
+{label:'Phase 2 — Build',shortLabel:'Build (w7–14)',
+note:'<strong>Goal:</strong> Marathon-specific volume and intensity. Quality Tuesday workouts, long runs include MP blocks. Run early mornings in July/August heat. Practice fuelling every long run — 60–90g carbs/hour.',
+weeks:[
+{n:7,date:'22 Jun',km:'65',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'5×2 km threshold'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'16 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'28 km long easy'},
+]},
+{n:8,date:'29 Jun',km:'70',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'10 km tempo'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'16 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'30 km long easy'},
+]},
+{n:9,date:'6 Jul',km:'60–65',cutback:true,days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'3×4 km MP'},
+  {d:'Wed',tag:'easy',t:'8 km easy'},
+  {d:'Thu',tag:'ml',t:'16 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'6–8 km easy'},
+  {d:'Sun',tag:'long',t:'24 km long easy'},
+]},
+{n:10,date:'13 Jul',km:'75',cutback:true,days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'6×1 mile threshold'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'18 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'30 km, final 8 km MP'},
+]},
+{n:11,date:'20 Jul',km:'75',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'12 km steady tempo'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'20 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'30 km, final 8 km MP'},
+]},
+{n:12,date:'27 Jul',km:'80',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'4×5 km MP'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'20 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'32 km long easy'},
+]},
+{n:13,date:'3 Aug',km:'75',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'5×2 km threshold'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'18 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'32 km, 10 km MP'},
+]},
+{n:14,date:'10 Aug',km:'80',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'3×10 min threshold + 2 min reintro / 8–10 km easy'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'22 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'32–34 km, 10–12 km MP'},
+]},
+]},
+{label:'Phase 3 — Peak',shortLabel:'Peak (w15–19)',
+note:'<strong>Goal:</strong> Race-specific sharpening — muscular fatigue resistance, pace discipline, fuelling mastery. Strength drops to maintenance 1×/week.',
+weeks:[
+{n:15,date:'17 Aug',km:'70',cutback:true,days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'14 km steady'},
+  {d:'Wed',tag:'easy',t:'8 km easy'},
+  {d:'Thu',tag:'ml',t:'18 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'6–8 km easy'},
+  {d:'Sun',tag:'long',t:'26 km long easy'},
+]},
+{n:16,date:'24 Aug',km:'80–85',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'3×6 km MP'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'22 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'34 km long easy'},
+]},
+{n:17,date:'31 Aug',km:'80',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'16 km MP continuous'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'20 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'30 km long easy'},
+]},
+{n:18,date:'7 Sep',km:'~85',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'6×2 km threshold'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'22 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'32–34 km, 10–12 km MP'},
+]},
+{n:19,date:'14 Sep',km:'80',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'3×5 km MP'},
+  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Thu',tag:'ml',t:'18 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'32 km progression'},
+]},
+]},
+{label:'Phase 4 — Taper',shortLabel:'Taper (w20–22)',
+note:'<strong>Goal:</strong> Arrive fresh. Volume drops ~25% per week; keep intensity. Trust the training.',
+weeks:[
+{n:20,date:'21 Sep',km:'55–60',days:[
+  {d:'Mon',tag:'sl',t:'Light Strength A'},
+  {d:'Tue',tag:'workout',t:'10 km MP'},
+  {d:'Wed',tag:'easy',t:'8 km easy'},
+  {d:'Thu',tag:'rest',t:'Rest'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'6 km easy'},
+  {d:'Sun',tag:'long',t:'24 km long easy'},
+]},
+{n:21,date:'28 Sep',km:'35–45',days:[
+  {d:'Mon',tag:'sl',t:'Light Strength A'},
+  {d:'Tue',tag:'workout',t:'6×1 km threshold'},
+  {d:'Wed',tag:'easy',t:'6–8 km easy'},
+  {d:'Thu',tag:'easy',t:'10 km easy'},
+  {d:'Fri',tag:'rest',t:'Rest'},
+  {d:'Sat',tag:'easy',t:'5–6 km easy'},
+  {d:'Sun',tag:'long',t:'16–18 km long easy'},
+]},
+{n:22,date:'5 Oct',km:'Race',days:[
+  {d:'Mon',tag:'rest',t:'Mobility only'},
+  {d:'Tue',tag:'workout',t:'3×1 km sharp'},
+  {d:'Wed',tag:'easy',t:'5–6 km easy'},
+  {d:'Thu',tag:'easy',t:'5 km easy'},
+  {d:'Fri',tag:'rest',t:'Rest — bib pickup at Parque das Nações'},
+  {d:'Sat',tag:'rest',t:'Full rest'},
+  {d:'Sun',tag:'race',t:'RACE DAY — Cascais 08:00'},
+]},
+]},
+];
+
+// week start dates as timestamps for current-week detection
+// week n starts on the Monday of that week
+const WEEK_STARTS = {
+  1: new Date('2026-05-11'),2:new Date('2026-05-18'),3:new Date('2026-05-25'),4:new Date('2026-06-01'),
+  5:new Date('2026-06-08'),6:new Date('2026-06-15'),7:new Date('2026-06-22'),8:new Date('2026-06-29'),
+  9:new Date('2026-07-06'),10:new Date('2026-07-13'),11:new Date('2026-07-20'),12:new Date('2026-07-27'),
+  13:new Date('2026-08-03'),14:new Date('2026-08-10'),15:new Date('2026-08-17'),16:new Date('2026-08-24'),
+  17:new Date('2026-08-31'),18:new Date('2026-09-07'),19:new Date('2026-09-14'),20:new Date('2026-09-21'),
+  21:new Date('2026-09-28'),22:new Date('2026-10-05')
+};
+
+function getCurrentWeek(){
+  const now = new Date();
+  let cur = null;
+  const wns = Object.keys(WEEK_STARTS).map(Number).sort((a,b)=>a-b);
+  for(let i=0;i<wns.length;i++){
+    const start = WEEK_STARTS[wns[i]];
+    const end = i+1<wns.length ? WEEK_STARTS[wns[i+1]] : new Date('2026-10-12');
+    if(now>=start && now<end){ cur=wns[i]; break; }
+  }
+  return cur;
+}
+
+const TAG_HTML = {
+  easy:'<span class="tag t-easy">Easy run</span>',
+  workout:'<span class="tag t-workout">Workout</span>',
+  ml:'<span class="tag t-ml">Mid-long</span>',
+  long:'<span class="tag t-long">Long run</span>',
+  sa:'<span class="tag t-sa">Strength</span>',
+  sb:'<span class="tag t-sb">Strength</span>',
+  sl:'<span class="tag t-sl">Strength</span>',
+  hike:'<span class="tag t-hike">Hike</span>',
+  rest:'<span class="tag t-rest">Rest</span>',
+  race:'<span class="tag t-race">Race</span>',
+};
+// tag class for planned tags (for removable display)
+const TAG_CLS = {
+  easy:'t-easy',workout:'t-workout',ml:'t-ml',long:'t-long',
+  sa:'t-sa',sb:'t-sb',sl:'t-sl',hike:'t-hike',rest:'t-rest',race:'t-race',
+};
+const TAG_LABEL = {
+  easy:'Easy run',workout:'Workout',ml:'Mid-long',long:'Long run',
+  sa:'Strength',sb:'Strength',sl:'Strength',hike:'Hike',rest:'Rest',race:'Race',
+};
+
+const EXTRA_OPTIONS = [
+  {section:'Run type', items:[
+    {id:'easy',cls:'dp-easy',label:'Easy run'},
+    {id:'workout',cls:'dp-workout',label:'Workout'},
+    {id:'ml',cls:'dp-ml',label:'Mid-long'},
+    {id:'long',cls:'dp-long',label:'Long run'},
+  ]},
+  {section:'Activity', items:[
+    {id:'strength',cls:'dp-strength',label:'Strength'},
+    {id:'yoga',cls:'dp-yoga',label:'Yoga'},
+    {id:'hike',cls:'dp-hike',label:'Hike'},
+    {id:'swim',cls:'dp-swim',label:'Swim'},
+    {id:'pilates',cls:'dp-pilates',label:'Pilates'},
+    {id:'padel',cls:'dp-padel',label:'Padel'},
+    {id:'rest',cls:'dp-rest',label:'Rest'},
+  ]},
+];
+const ADDED_CLS = {
+  easy:'t-easy',workout:'t-workout',ml:'t-ml',long:'t-long',
+  strength:'t-strength',yoga:'t-yoga',hike:'t-hike',swim:'t-swim',pilates:'t-pilates',padel:'t-padel',rest:'t-rest',
+};
+const ADDED_LABEL = {
+  easy:'Easy run',workout:'Workout',ml:'Mid-long',long:'Long run',
+  strength:'Strength',yoga:'Yoga',hike:'Hike',swim:'Swim',pilates:'Pilates',padel:'Padel',rest:'Rest',
+};
+
+// Default strength exercises from PDF
+const DEFAULT_STR = {
+  A:[
+    'Heavy straight-leg calf raises — 3×10',
+    'Soleus raises — 4×15',
+    'Bulgarian split squats — 3×8 each leg',
+    'Single-leg RDLs — 3×8 each side',
+    'Step-ups — 3×10 each leg',
+    'Push-ups — 3×8–15',
+    'Walking lunges — 3×12 each leg',
+    'Romanian deadlifts — 3×8',
+    'Dumbbell overhead press — 3×6–10',
+    'Hamstring sliders / single-leg glute bridge — 3×10 / 3×8',
+    'Copenhagen planks — 3×20–30 sec',
+    'Wide leg squats',
+    'Plyometrics (pogos/skipping/hops/bounds) — 2–3 sets',
+    'Hollow body hold — 3×20–40 sec',
+  ],
+  Acore:[
+    'Dead bugs — 3×10 each side',
+    'Side planks (with or without leg lift) — 3×30–45 sec each side',
+    'Reverse crunch — 3×10–15',
+    'Plank shoulder taps — 3×16–20',
+    'Plank hold — 2–3×45–60 sec',
+  ],
+  B:[
+    'Banded monster walks',
+    'Banded leg lifts (all directions)',
+    'Banded hip flexor lifts',
+    'Banded lying side leg lifts',
+    'Banded clamshells',
+    'Straight leg lifts (seated or standing)',
+  ],
+  PC:[
+    'Single-leg glute bridge — 3×12 each side',
+    'Hip thrusts — 3×10',
+    'Nordic hamstring curls — 3×6',
+    'Good mornings — 3×10',
+    'Reverse hyperextensions — 3×12',
+    'Glute-ham raises — 3×8',
+  ],
+};
+
+let state = {};
+try { state = JSON.parse(localStorage.getItem('lm26_v5') || '{}'); } catch(e){}
+function save(){ try{ localStorage.setItem('lm26_v5', JSON.stringify(state)); }catch(e){} }
+
+// initialise strength state from defaults if not present
+if(!state.strA) state.strA = [...DEFAULT_STR.A];
+if(!state.strAcore) state.strAcore = [...DEFAULT_STR.Acore];
+if(!state.strB) state.strB = [...DEFAULT_STR.B];
+if(!state.strPC) state.strPC = [...DEFAULT_STR.PC];
+
+let openWeeks = {};
+let activePhase = 0;
+let openDropdown = null;
+let activeTopTab = 'plan';
+
+function dk(wn,di){ return `w${wn}d${di}`; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escA(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
+
+// ── TOP TAB ──────────────────────────────────────────────────────────────────
+function showTab(tab){
+  activeTopTab = tab;
+  document.getElementById('tab-plan').style.display = tab==='plan' ? 'block' : 'none';
+  document.getElementById('tab-strength').style.display = tab==='strength' ? 'block' : 'none';
+  document.getElementById('phaseNav').style.display = tab==='plan' ? 'flex' : 'none';
+  const cs = document.getElementById('countdown-strip');
+  if(cs) cs.style.display = tab==='plan' ? 'block' : 'none';
+  document.querySelectorAll('.top-tab').forEach((b,i)=>b.classList.toggle('active', (i===0&&tab==='plan')||(i===1&&tab==='strength')));
+  if(tab==='strength') renderStrength();
+}
+
+// ── STRENGTH PAGE ────────────────────────────────────────────────────────────
+function renderStrength(){
+  const sections = [
+    {key:'strA', title:'Strength A'},
+    {key:'strB', title:'Strength B'},
+    {key:'strAcore', title:'Core'},
+    {key:'strPC', title:'Posterior Chain'},
+  ];
+  let html = '';
+  sections.forEach(sec => {
+    const items = state[sec.key] || [];
+    html += `<div class="str-card" id="card-${sec.key}" ondragover="strDragOver(event,'${sec.key}')" ondragleave="strDragLeave(event,'${sec.key}')" ondrop="strDrop(event,'${sec.key}')">
+      <h2>${sec.title}</h2>
+      <div class="str-items">`;
+    items.forEach((ex, i) => {
+      html += `<div class="str-item" id="si-${sec.key}-${i}" draggable="true"
+        ondragstart="strDragStart(event,'${sec.key}',${i})"
+        ondragend="strDragEnd(event)"
+        ondragover="strItemOver(event,'${sec.key}',${i})">
+        <span class="str-drag-handle">⠿</span>
+        <span class="str-item-text" id="str-text-${sec.key}-${i}" onclick="startStrEdit('${sec.key}',${i})">${esc(ex)}</span>
+        <input class="str-item-input" id="str-inp-${sec.key}-${i}" type="text" value="${escA(ex)}" style="display:none;" onblur="finishStrEdit('${sec.key}',${i})" onkeydown="strEditKey(event,'${sec.key}',${i})">
+        <button class="str-del" onclick="delExercise('${sec.key}',${i})" title="Remove">×</button>
+      </div>`;
+    });
+    html += `</div>
+      <div class="add-exercise-row" id="add-row-${sec.key}" style="display:none;">
+        <input type="text" id="new-ex-${sec.key}" placeholder="New exercise…" onkeydown="if(event.key==='Enter') addExercise('${sec.key}'); else if(event.key==='Escape') hideAddRow('${sec.key}')">
+        <button onclick="addExercise('${sec.key}')">Add</button>
+      </div>
+      <div class="str-card-footer">
+        <button class="str-add-btn" onclick="showAddRow('${sec.key}')" id="add-btn-${sec.key}" title="Add exercise">+</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('strGrid').innerHTML = html;
+}
+
+// ── STRENGTH DRAG & DROP ──────────────────────────────────────────────────────
+let dragSrc = null; // {key, i}
+
+function strDragStart(evt, key, i){
+  dragSrc = {key, i};
+  evt.dataTransfer.effectAllowed = 'move';
+  setTimeout(()=>{ const el=document.getElementById(`si-${key}-${i}`); if(el) el.classList.add('dragging'); }, 0);
+}
+function strDragEnd(evt){
+  document.querySelectorAll('.str-item').forEach(el=>el.classList.remove('dragging','drag-target'));
+  document.querySelectorAll('.str-card').forEach(el=>el.classList.remove('drag-over'));
+}
+function strDragOver(evt, key){
+  evt.preventDefault();
+  evt.dataTransfer.dropEffect='move';
+  const card=document.getElementById(`card-${key}`);
+  if(card) card.classList.add('drag-over');
+}
+function strDragLeave(evt, key){
+  const card=document.getElementById(`card-${key}`);
+  if(card) card.classList.remove('drag-over');
+}
+function strItemOver(evt, key, i){
+  evt.preventDefault();
+  document.querySelectorAll('.str-item').forEach(el=>el.classList.remove('drag-target'));
+  const el=document.getElementById(`si-${key}-${i}`);
+  if(el) el.classList.add('drag-target');
+}
+function strDrop(evt, destKey){
+  evt.preventDefault();
+  if(!dragSrc) return;
+  const {key:srcKey, i:srcIdx} = dragSrc;
+  dragSrc = null;
+
+  // find drop position — which item was targeted?
+  const items = document.getElementById(`card-${destKey}`).querySelectorAll('.str-item.drag-target');
+  let destIdx = (state[destKey]||[]).length; // default: end of list
+  if(items.length){
+    const m = items[0].id.match(/-(\d+)$/);
+    if(m) destIdx = parseInt(m[1]);
+  }
+
+  const srcList = [...(state[srcKey]||[])];
+  const destList = srcKey===destKey ? srcList : [...(state[destKey]||[])];
+
+  const [moved] = srcList.splice(srcIdx, 1);
+
+  if(srcKey === destKey){
+    srcList.splice(destIdx > srcIdx ? destIdx-1 : destIdx, 0, moved);
+    state[srcKey] = srcList;
+  } else {
+    state[srcKey] = srcList;
+    destList.splice(destIdx, 0, moved);
+    state[destKey] = destList;
+  }
+
+  save();
+  renderStrength();
+}
+
+function startStrEdit(key, i){
+  document.getElementById(`str-text-${key}-${i}`).style.display='none';
+  const inp = document.getElementById(`str-inp-${key}-${i}`);
+  inp.style.display='inline-block'; inp.focus(); inp.select();
+}
+function finishStrEdit(key, i){
+  const inp = document.getElementById(`str-inp-${key}-${i}`);
+  const txt = document.getElementById(`str-text-${key}-${i}`);
+  if(!inp||!txt) return;
+  state[key][i] = inp.value; save();
+  txt.textContent = inp.value;
+  inp.style.display='none'; txt.style.display='inline';
+}
+function strEditKey(evt, key, i){ if(evt.key==='Enter'||evt.key==='Escape') finishStrEdit(key,i); }
+function delExercise(key, i){ state[key].splice(i,1); save(); renderStrength(); }
+function showAddRow(key){
+  const row=document.getElementById(`add-row-${key}`);
+  const btn=document.getElementById(`add-btn-${key}`);
+  if(row){ row.style.display='flex'; }
+  if(btn){ btn.style.display='none'; }
+  const inp = document.getElementById(`new-ex-${key}`);
+  if(inp){
+    setTimeout(()=>{ inp.focus(); }, 30);
+    inp.onblur = ()=>{ setTimeout(()=>hideAddRow(key), 160); };
+  }
+}
+function hideAddRow(key){
+  const row=document.getElementById(`add-row-${key}`);
+  const btn=document.getElementById(`add-btn-${key}`);
+  if(row){ row.style.display='none'; const inp=document.getElementById(`new-ex-${key}`); if(inp) inp.value=''; }
+  if(btn){ btn.style.display='inline-block'; }
+}
+function addExercise(key){
+  const inp = document.getElementById(`new-ex-${key}`);
+  if(!inp||!inp.value.trim()) return;
+  state[key].push(inp.value.trim()); save();
+  renderStrength();
+}
+function resetStrength(key){
+  const map = {strA:'A',strAcore:'Acore',strB:'B',strPC:'PC'};
+  state[key] = [...DEFAULT_STR[map[key]]]; save(); renderStrength();
+}
+
+// ── UNIFIED TEXT (replaces title + note) ─────────────────────────────────────
+function startTextEdit(wn, di){
+  const el = document.getElementById(`dt-${wn}-${di}`);
+  if(!el || el.tagName === 'INPUT') return;
+  const k=dk(wn,di); if(!state[k]) state[k]={};
+  const text = state[k].text != null ? state[k].text : (state[k].title != null ? state[k].title : (findWeek(wn)?.days[di]?.t || ''));
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.className = 'day-text-input';
+  inp.id = `dt-${wn}-${di}`;
+  inp.value = text;
+  inp.onblur = ()=>saveText(wn,di);
+  inp.onkeydown = (e)=>{ if(e.key==='Enter'||e.key==='Escape'){ e.preventDefault(); saveText(wn,di); } };
+  inp.onclick = (e)=>e.stopPropagation();
+  el.replaceWith(inp);
+  inp.focus();
+  inp.selectionStart = inp.selectionEnd = inp.value.length;
+}
+
+// ── PILL DRAG
+function saveText(wn, di){
+  const inp = document.getElementById(`dt-${wn}-${di}`);
+  if(!inp || inp.tagName !== 'INPUT') return;
+  const k=dk(wn,di); if(!state[k]) state[k]={};
+  const val = inp.value;
+  state[k].text = val;
+  delete state[k].textEditing;
+  save();
+  const span = document.createElement('span');
+  if(val === ''){
+    span.className = 'day-text-display day-text-empty';
+    span.textContent = '+ note';
+  } else {
+    span.className = 'day-text-display';
+    span.textContent = val;
+  }
+  span.id = `dt-${wn}-${di}`;
+  span.onclick = (e)=>{ e.stopPropagation(); startTextEdit(wn,di); };
+  inp.replaceWith(span);
+}
+
+function textKey(evt, wn, di){
+  if(evt.key==='Enter'||evt.key==='Escape'){ evt.preventDefault(); saveText(wn,di); }
+}
+
+// ── PILL DRAG (reorder within day OR move to another day) ────────────────────
+let pillDrag = null; // {wn, di, idx, id, isPlanned}
+
+function pillDragStart(evt, wn, di, idx){
+  const k=dk(wn,di);
+  const id = (state[k]?.added||[])[idx];
+  pillDrag = {wn, di, idx, id, isPlanned:false};
+  evt.dataTransfer.effectAllowed = 'move';
+  evt.dataTransfer.setData('text/plain','pill');
+  setTimeout(()=>evt.currentTarget.style.opacity='0.4', 0);
+}
+
+function pillDragStartPlanned(evt, wn, di){
+  const w=findWeek(wn); const tag=w?.days[di]?.tag;
+  pillDrag = {wn, di, idx:-1, id:tag, isPlanned:true};
+  evt.dataTransfer.effectAllowed = 'move';
+  evt.dataTransfer.setData('text/plain','pill');
+  setTimeout(()=>evt.currentTarget.style.opacity='0.4', 0);
+}
+
+function pillDragEnd(evt){ evt.currentTarget.style.opacity=''; }
+
+function pillDragOver(evt, wn, di, idx){
+  if(!pillDrag) return;
+  evt.preventDefault();
+  evt.stopPropagation();
+  evt.currentTarget.style.outline='2px solid #087E8B';
+}
+function pillDragLeave(evt){ evt.currentTarget.style.outline=''; }
+
+function pillDrop(evt, wn, di, idx){
+  evt.currentTarget.style.outline='';
+  evt.stopPropagation();
+  if(!pillDrag) return;
+  const src = pillDrag; pillDrag=null;
+
+  if(src.isPlanned){
+    // can't really move planned tag, ignore
+    return;
+  }
+
+  const srcK=dk(src.wn,src.di); const dstK=dk(wn,di);
+  if(!state[srcK]) state[srcK]={};
+
+  // same day reorder
+  if(src.wn===wn && src.di===di){
+    const arr=[...(state[srcK].added||[])];
+    const [m]=arr.splice(src.idx,1);
+    arr.splice(idx,0,m);
+    state[srcK].added=arr; save();
+  } else {
+    // move to another day: remove from src, add to dest at position idx
+    const srcArr=[...(state[srcK].added||[])];
+    srcArr.splice(src.idx,1);
+    state[srcK].added=srcArr;
+    if(!state[dstK]) state[dstK]={};
+    const dstArr=[...(state[dstK].added||[])];
+    dstArr.splice(idx,0,src.id);
+    state[dstK].added=dstArr;
+    save();
+    // refresh source day tags
+    const srcTagsEl=document.getElementById(`tags-${src.wn}-${src.di}`);
+    if(srcTagsEl){
+      const sw=findWeek(src.wn); const sd=sw?.days[src.di];
+      if(sd) srcTagsEl.innerHTML=plannedTagHtml(sd.tag,src.wn,src.di,!!state[srcK].plannedHidden)+addedTagsHtml(state[srcK],src.wn,src.di);
+    }
+    refreshKmCol(src.wn,src.di);
+  }
+  // refresh dest day tags
+  const dstTagsEl=document.getElementById(`tags-${wn}-${di}`);
+  if(dstTagsEl){
+    const dw=findWeek(wn); const dd=dw?.days[di];
+    if(dd) dstTagsEl.innerHTML=plannedTagHtml(dd.tag,wn,di,!!state[dstK].plannedHidden)+addedTagsHtml(state[dstK],wn,di);
+  }
+  refreshKmCol(wn,di);
+}
+
+// day-level drag-over (for when dragging over empty parts of a day row)
+function dayDragOver(evt, wn, di){
+  if(!pillDrag || (pillDrag.wn===wn && pillDrag.di===di)) return;
+  evt.preventDefault();
+  document.getElementById(`dr-${wn}-${di}`)?.classList.add('drag-target-day');
+}
+function dayDragLeave(evt, wn, di){
+  document.getElementById(`dr-${wn}-${di}`)?.classList.remove('drag-target-day');
+}
+function dayDrop(evt, wn, di){
+  document.getElementById(`dr-${wn}-${di}`)?.classList.remove('drag-target-day');
+  if(!pillDrag || pillDrag.wn===wn && pillDrag.di===di) return;
+  evt.preventDefault();
+  // drop at end of added list
+  const src=pillDrag; pillDrag=null;
+  if(src.isPlanned) return;
+  const srcK=dk(src.wn,src.di); const dstK=dk(wn,di);
+  if(!state[srcK]) state[srcK]={};
+  if(!state[dstK]) state[dstK]={};
+  const srcArr=[...(state[srcK].added||[])];
+  srcArr.splice(src.idx,1);
+  state[srcK].added=srcArr;
+  const dstArr=[...(state[dstK].added||[])];
+  dstArr.push(src.id);
+  state[dstK].added=dstArr;
+  save();
+  // refresh both days
+  [src,{wn,di}].forEach(({wn:w2,di:d2})=>{
+    const tagsEl=document.getElementById(`tags-${w2}-${d2}`);
+    if(tagsEl){
+      const pw=findWeek(w2); const pd=pw?.days[d2];
+      const k2=dk(w2,d2);
+      if(pd) tagsEl.innerHTML=plannedTagHtml(pd.tag,w2,d2,!!state[k2]?.plannedHidden)+addedTagsHtml(state[k2]||{},w2,d2);
+    }
+    refreshKmCol(w2,d2);
+  });
+}
+
+// ── PLAN ─────────────────────────────────────────────────────────────────────
+function addedTagsHtml(s, wn, di){
+  const added = s.added || [];
+  return added.map((id, idx) =>
+    `<span class="tag ${ADDED_CLS[id]} tag-removable"
+      draggable="true"
+      ondragstart="pillDragStart(event,${wn},${di},${idx})"
+      ondragend="pillDragEnd(event)"
+      ondragover="pillDragOver(event,${wn},${di},${idx})"
+      ondragleave="pillDragLeave(event)"
+      ondrop="pillDrop(event,${wn},${di},${idx})"
+      onclick="removeAdded(event,${wn},${di},'${id}')"
+      title="Drag to move · click to remove">${ADDED_LABEL[id]}</span>`
+  ).join('');
+}
+
+function plannedTagHtml(tag, wn, di, hidden){
+  const cls = TAG_CLS[tag] || '';
+  const label = TAG_LABEL[tag] || tag;
+  if(hidden) return '';
+  return `<span class="tag ${cls} tag-removable" id="ptag-${wn}-${di}" onclick="togglePlannedTag(${wn},${di})" title="Click to remove">${label}</span>`;
+}
+
+function renderPhase(){
+  const currentWeek = getCurrentWeek();
+  let fullHtml = '';
+
+  PHASES.forEach((p, phaseIdx) => {
+    const noteKey = `phaseNote_${phaseIdx}`;
+    const noteText = state[noteKey] != null ? state[noteKey] : p.note;
+    const noteEditing = !!state[`phaseNoteEditing_${phaseIdx}`];
+    let phaseNoteHtml;
+    if(noteEditing){
+      phaseNoteHtml = `<div class="phase-note">
+        <textarea class="phase-note-edit" id="phase-note-ta-${phaseIdx}" style="display:block;">${esc(noteText)}</textarea>
+        <div class="phase-note-actions">
+          <button class="btn-save" onclick="savePhaseNote(${phaseIdx})">Save</button>
+          <button class="btn-discard" onclick="cancelPhaseNote(${phaseIdx})">Cancel</button>
+        </div>
+      </div>`;
+    } else {
+      phaseNoteHtml = `<div class="phase-note">
+        <span class="phase-note-display" onclick="editPhaseNote(${phaseIdx})" title="Click to edit">${noteText}</span>
+      </div>`;
+    }
+
+    fullHtml += `<div class="phase-section" id="phase-section-${phaseIdx}">
+      <div class="phase-section-label">${p.label}</div>
+      ${phaseNoteHtml}`;
+
+    p.weeks.forEach(w => {
+      const wopen = !!openWeeks[w.n];
+      const RUN_TYPES_P = ['easy','workout','ml','long'];
+      // total = planned run days only (fixed)
+      const totalRuns = w.days.filter(d => RUN_TYPES_P.includes(d.tag)).length;
+      // done = any run day (planned or added pill) with km logged
+      const doneRuns = w.days.filter((d,i) => {
+        const s2 = state[dk(w.n,i)] || {};
+        const isPlannedRun = RUN_TYPES_P.includes(d.tag);
+        const hasAddedRun = (s2.added||[]).some(id => RUN_TYPES_P.includes(id));
+        if(!isPlannedRun && !hasAddedRun) return false;
+        return parseFloat(s2.kmActual) > 0;
+      }).length;
+      const isCurrent = w.n === currentWeek;
+      const wlabel = w.travel ? `W${w.n} — Travel` : w.cutback ? `W${w.n} — Cutback` : `W${w.n}`;
+      const curBadge = isCurrent ? `<span class="current-label">Current</span>` : '';
+      const prog = totalRuns > 0 && doneRuns > 0
+        ? `<span class="week-progress" id="prog-${w.n}"><span class="done-count">${doneRuns}</span>/${totalRuns} runs</span>`
+        : `<span class="week-progress" id="prog-${w.n}"></span>`;
+
+      let actualTotal = 0;
+      w.days.forEach((_,i) => { const v = parseFloat((state[dk(w.n,i)]||{}).kmActual); if(!isNaN(v)) actualTotal += v; });
+      const hasActual = actualTotal > 0;
+
+      let badgeHtml;
+      if(w.km === 'Race'){
+        badgeHtml = `<span class="km-badge" style="background:#faeeda;color:#633806;">Race</span>`;
+      } else {
+        const plannedLine = `<span class="km-planned-line">${w.km} km</span>`;
+        const actualLine = hasActual ? `<span class="km-actual-badge">${actualTotal % 1 === 0 ? actualTotal : actualTotal.toFixed(1)} km</span>` : '';
+        badgeHtml = `<div class="km-badge-wrap">${actualLine}${plannedLine}</div>`;
+      }
+
+      fullHtml += `<div class="week${isCurrent?' current-week':''}" id="week-${w.n}">
+        <div class="week-hdr" onclick="toggleWeek(${w.n})">
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+            <span class="week-title">${wlabel}</span><span class="week-date">${w.date}</span>${curBadge}${prog}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">${badgeHtml}<span class="chevron${wopen?' open':''}">▼</span></div>
+        </div>
+        <div class="week-body${wopen?' open':''}">`;
+
+      w.days.forEach((day, di) => {
+        const k = dk(w.n, di);
+        const s = state[k] || {};
+        // unified text: use s.text (new field), fall back to s.title, then day default
+        const text = s.text != null ? s.text : (s.title != null ? s.title : day.t);
+        const isDefault = text === day.t;
+        const isEmpty = text === '';
+        const plannedHidden = !!s.plannedHidden;
+        const dropOpen = openDropdown === `${w.n}-${di}`;
+        const kmActual = s.kmActual || '';
+        const textEditing = !!s.textEditing;
+
+        const dayOfWeek = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].indexOf(day.d);
+        const weekStart = WEEK_STARTS[w.n];
+        let dayDate = null;
+        if(weekStart){ dayDate = new Date(weekStart); dayDate.setDate(dayDate.getDate() + dayOfWeek); }
+        const isPast = dayDate ? dayDate < new Date(new Date().toDateString()) : false;
+
+        const RUN_TYPES = ['easy','workout','ml','long'];
+        const plannedIsRun = !plannedHidden && RUN_TYPES.includes(day.tag);
+        const addedHasRun = (s.added||[]).some(id => RUN_TYPES.includes(id));
+        const showKm = plannedIsRun || addedHasRun;
+        const isMissedRun = isPast && (plannedIsRun || addedHasRun) && !(parseFloat(kmActual) > 0);
+
+        const kmColHtml = showKm
+          ? `<div class="km-col">${isMissedRun ? '<span class="missed-label">missed</span>' : ''}<input class="km-actual-input" id="km-${w.n}-${di}" type="text" inputmode="decimal" placeholder="km" value="${escA(String(kmActual))}" onchange="saveKm(${w.n},${di},this.value)" onclick="event.stopPropagation()"></div>`
+          : `<div class="km-col"></div>`;
+
+        // text display: always render as span; editing handled by DOM swap in startTextEdit
+        let textDisplay;
+        if(isEmpty){
+          textDisplay = `<span class="day-text-display day-text-empty" id="dt-${w.n}-${di}" onclick="startTextEdit(${w.n},${di})">+ note</span>`;
+        } else {
+          textDisplay = `<span class="day-text-display" id="dt-${w.n}-${di}" onclick="startTextEdit(${w.n},${di})">${esc(text)}</span>`;
+        }
+
+        fullHtml += `<div class="day-row${isPast?' past':''}${isMissedRun?' missed-run':''}" id="dr-${w.n}-${di}"
+          ondragover="dayDragOver(event,${w.n},${di})"
+          ondragleave="dayDragLeave(event,${w.n},${di})"
+          ondrop="dayDrop(event,${w.n},${di})">
+          <div class="day-label">${day.d}</div>
+          <div class="tags-area" id="tags-${w.n}-${di}">
+            ${plannedTagHtml(day.tag, w.n, di, plannedHidden)}
+            ${addedTagsHtml(s, w.n, di)}
+          </div>
+          <div class="day-main">
+            ${textDisplay}
+          </div>
+          ${kmColHtml}
+          <div style="position:relative;">
+            <button class="add-btn" onclick="toggleDropdown(event,${w.n},${di})" title="Add activity">+</button>
+            ${dropOpen ? buildDropdown(w.n, di, s) : ''}
+          </div>
+        </div>`;
+      });
+
+      fullHtml += `</div></div>`;
+    });
+
+    fullHtml += `</div>`; // close phase-section
+  });
+
+  document.getElementById('content').innerHTML = fullHtml;
+
+  // auto-focus any open phase note textarea
+  PHASES.forEach((_,pi) => {
+    if(state[`phaseNoteEditing_${pi}`]){
+      const ta = document.getElementById(`phase-note-ta-${pi}`);
+      if(ta){ ta.style.height=ta.scrollHeight+'px'; setTimeout(()=>ta.focus(), 30); }
+    }
+  });
+}
+
+function buildDropdown(wn, di, s){
+  const added = s.added || [];
+  let h = `<div class="add-dropdown" id="drop-${wn}-${di}" onclick="event.stopPropagation()">`;
+  EXTRA_OPTIONS.forEach(section => {
+    h += `<div class="drop-section">${section.section}</div><div class="drop-pills">`;
+    section.items.forEach(item => {
+      const sel = added.includes(item.id);
+      h += `<span class="drop-pill ${item.cls}${sel?' selected':''}" onclick="toggleAdded(${wn},${di},'${item.id}')">${item.label}</span>`;
+    });
+    h += `</div>`;
+  });
+  h += `</div>`;
+  return h;
+}
+
+function renderNav(){
+  document.getElementById('phaseNav').innerHTML = PHASES.map((p,i)=>
+    `<button class="phase-btn${i===activePhase?' active':''}" onclick="scrollToPhase(${i})">${p.shortLabel}</button>`
+  ).join('');
+}
+
+function scrollToPhase(i){
+  activePhase = i;
+  renderNav();
+  const el = document.getElementById(`phase-section-${i}`);
+  if(el){
+    const navH = document.querySelector('.sticky-top')?.offsetHeight || 100;
+    const y = el.getBoundingClientRect().top + window.scrollY - navH - 8;
+    window.scrollTo({top:y, behavior:'smooth'});
+  }
+}
+
+function setPhase(i){ scrollToPhase(i); }
+function toggleWeek(n){ openWeeks[n]=!openWeeks[n]; openDropdown=null; renderPhase(); }
+
+// scroll-spy: watch phase sections and update active nav btn
+function initScrollSpy(){
+  function updateActivPhase(){
+    const navH = document.querySelector('.sticky-top')?.offsetHeight || 100;
+    const scrollY = window.scrollY + navH + 20;
+    let current = 0;
+    PHASES.forEach((_,i)=>{
+      const el = document.getElementById(`phase-section-${i}`);
+      if(el && el.getBoundingClientRect().top + window.scrollY <= scrollY) current = i;
+    });
+    if(current !== activePhase){
+      activePhase = current;
+      document.querySelectorAll('.phase-btn').forEach((b,i)=>b.classList.toggle('active',i===activePhase));
+    }
+  }
+  window.addEventListener('scroll', updateActivPhase, {passive:true});
+  updateActivPhase();
+}
+
+function updateProgress(wn){
+  let w = null;
+  for(const p of PHASES){ w = p.weeks.find(x=>x.n===wn); if(w) break; }
+  if(!w) return;
+  const RUN_TYPES_P = ['easy','workout','ml','long'];
+  const totalRuns = w.days.filter(d => RUN_TYPES_P.includes(d.tag)).length;
+  const doneRuns = w.days.filter((d,i)=>{
+    const s2 = state[dk(wn,i)] || {};
+    const isPlannedRun = RUN_TYPES_P.includes(d.tag);
+    const hasAddedRun = (s2.added||[]).some(id=>RUN_TYPES_P.includes(id));
+    return (isPlannedRun||hasAddedRun) && parseFloat(s2.kmActual) > 0;
+  }).length;
+  const el=document.getElementById(`prog-${wn}`);
+  if(el) el.innerHTML = totalRuns>0&&doneRuns>0 ? `<span class="done-count">${doneRuns}</span>/${totalRuns} runs` : '';
+}
+
+function toggleDone(wn,di,el){
+  const k=dk(wn,di); if(!state[k]) state[k]={};
+  state[k].done=el.checked; save();
+  document.getElementById(`dr-${wn}-${di}`)?.classList.toggle('done',el.checked);
+  const main=document.querySelector(`#dr-${wn}-${di} .day-main`);
+  if(main) main.style.opacity=el.checked?'0.45':'1';
+  updateProgress(wn);
+}
+
+function findWeek(wn){ for(const p of PHASES){ const w=p.weeks.find(x=>x.n===wn); if(w) return w; } return null; }
+
+function refreshKmCol(wn, di){
+  const w=findWeek(wn); if(!w) return;
+  const day=w.days[di]; if(!day) return;
+  const k=dk(wn,di); const s=state[k]||{};
+  const RUN_TYPES=['easy','workout','ml','long'];
+  const plannedIsRun = !s.plannedHidden && RUN_TYPES.includes(day.tag);
+  const addedHasRun = (s.added||[]).some(id=>RUN_TYPES.includes(id));
+  const showKm = plannedIsRun || addedHasRun;
+  const row = document.getElementById(`dr-${wn}-${di}`);
+  if(!row) return;
+  // determine past
+  const dayOfWeek = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].indexOf(day.d);
+  const weekStart = WEEK_STARTS[wn];
+  let dayDate = null;
+  if(weekStart){ dayDate = new Date(weekStart); dayDate.setDate(dayDate.getDate()+dayOfWeek); }
+  const isPast = dayDate ? dayDate < new Date(new Date().toDateString()) : false;
+  const kmActual = s.kmActual||'';
+  const isMissed = isPast && showKm && !(parseFloat(kmActual)>0);
+  row.classList.toggle('missed-run', isMissed);
+  // grid: day(0) | tags(1) | main(2) | km-col(3) | add-btn(4)
+  const kmCell = row.children[3]; if(!kmCell) return;
+  if(showKm){
+    const missedHtml = isMissed ? `<span class="missed-label">missed</span>` : '';
+    kmCell.innerHTML=`${missedHtml}<input class="km-actual-input" id="km-${wn}-${di}" type="text" inputmode="decimal" placeholder="km" value="${escA(String(kmActual))}" onchange="saveKm(${wn},${di},this.value)" onclick="event.stopPropagation()">`;
+  } else {
+    kmCell.innerHTML='';
+  }
+}
+
+function togglePlannedTag(wn, di){
+  const k=dk(wn,di); if(!state[k]) state[k]={};
+  state[k].plannedHidden = !state[k].plannedHidden; save();
+  openDropdown = null; // close any open dropdown
+  const tagsEl=document.getElementById(`tags-${wn}-${di}`);
+  if(tagsEl){
+    const w=findWeek(wn); const day=w?w.days[di]:null; if(!day) return;
+    const s=state[k];
+    tagsEl.innerHTML=plannedTagHtml(day.tag,wn,di,s.plannedHidden)+addedTagsHtml(s,wn,di);
+  }
+  // also ensure the add-btn cell (col 4) is intact
+  const row=document.getElementById(`dr-${wn}-${di}`);
+  if(row&&row.children[4]&&!row.children[4].querySelector('.add-btn')){
+    row.children[4].innerHTML=`<button class="add-btn" onclick="toggleDropdown(event,${wn},${di})" title="Add activity">+</button>`;
+  }
+  refreshKmCol(wn,di);
+}
+
+function toggleDropdown(evt,wn,di){
+  evt.stopPropagation();
+  const key=`${wn}-${di}`;
+  openDropdown = openDropdown===key ? null : key;
+  renderPhase();
+}
+
+function toggleAdded(wn,di,id){
+  const k=dk(wn,di); if(!state[k]) state[k]={};
+  if(!state[k].added) state[k].added=[];
+  const idx=state[k].added.indexOf(id);
+  if(idx>=0) state[k].added.splice(idx,1);
+  else state[k].added.push(id);
+  save();
+  openDropdown = null; // close dropdown after selection
+  const tagsEl=document.getElementById(`tags-${wn}-${di}`);
+  if(tagsEl){
+    const w=findWeek(wn); const day=w?w.days[di]:null; if(!day) return;
+    const s=state[k];
+    tagsEl.innerHTML=plannedTagHtml(day.tag,wn,di,!!s.plannedHidden)+addedTagsHtml(s,wn,di);
+  }
+  // close the dropdown in DOM
+  const drop=document.getElementById(`drop-${wn}-${di}`);
+  if(drop) drop.remove();
+  // restore add-btn if it got clobbered
+  const row=document.getElementById(`dr-${wn}-${di}`);
+  if(row&&row.children[4]&&!row.children[4].querySelector('.add-btn')){
+    row.children[4].innerHTML=`<button class="add-btn" onclick="toggleDropdown(event,${wn},${di})" title="Add activity">+</button>`;
+  }
+  refreshKmCol(wn,di);
+  updateProgress(wn);
+}
+
+function removeAdded(evt,wn,di,id){
+  evt.stopPropagation();
+  const k=dk(wn,di); if(!state[k]) return;
+  state[k].added=(state[k].added||[]).filter(x=>x!==id); save();
+  openDropdown = null;
+  const tagsEl=document.getElementById(`tags-${wn}-${di}`);
+  if(tagsEl){
+    const w=findWeek(wn); const day=w?w.days[di]:null; if(!day) return;
+    const s=state[k];
+    tagsEl.innerHTML=plannedTagHtml(day.tag,wn,di,!!s.plannedHidden)+addedTagsHtml(s,wn,di);
+  }
+  const row=document.getElementById(`dr-${wn}-${di}`);
+  if(row&&row.children[4]&&!row.children[4].querySelector('.add-btn')){
+    row.children[4].innerHTML=`<button class="add-btn" onclick="toggleDropdown(event,${wn},${di})" title="Add activity">+</button>`;
+  }
+  refreshKmCol(wn,di);
+  updateProgress(wn);
+}
+
+function saveKm(wn, di, val){
+  const k=dk(wn,di); if(!state[k]) state[k]={};
+  const v = parseFloat(val);
+  state[k].kmActual = isNaN(v)||v<=0 ? '' : v;
+  save();
+  const w=findWeek(wn); if(!w) return;
+  let actualTotal=0;
+  w.days.forEach((_,i)=>{ const v2=parseFloat((state[dk(wn,i)]||{}).kmActual); if(!isNaN(v2)) actualTotal+=v2; });
+  const hasActual=actualTotal>0;
+  const wrap=document.querySelector(`#week-${wn} .km-badge-wrap`);
+  if(wrap){
+    const plannedLine=`<span class="km-planned-line">${w.km} km</span>`;
+    const actualLine=hasActual?`<span class="km-actual-badge">${actualTotal%1===0?actualTotal:actualTotal.toFixed(1)} km</span>`:'';
+    wrap.innerHTML=actualLine+plannedLine;
+  }
+  refreshKmCol(wn,di); // updates missed-run class
+  updateProgress(wn);
+}
+
+function editPhaseNote(pi){
+  state[`phaseNoteEditing_${pi}`]=true;
+  renderPhase();
+}
+function savePhaseNote(pi){
+  const ta=document.getElementById(`phase-note-ta-${pi}`);
+  if(ta) state[`phaseNote_${pi}`]=ta.value;
+  state[`phaseNoteEditing_${pi}`]=false;
+  save(); renderPhase();
+}
+function cancelPhaseNote(pi){
+  state[`phaseNoteEditing_${pi}`]=false;
+  renderPhase();
+}
+
+// ── MOTIVATIONAL QUOTES ──────────────────────────────────────────────────────
+const QUOTES = [
+  "Your legs will forgive you.\nEventually.",
+  "26.2 miles.\nBecause 26.1 would be quitting.",
+  "The only bad run\nis the one that didn't happen.\nAnd maybe that one.",
+  "Toenails are overrated anyway.",
+  "You're not slow.\nYou're just enjoying\nthe scenery longer.",
+  "Pain is temporary.\nStrava is forever.",
+  "Your future self is already waiting\nat the finish line looking smug.",
+  "Somewhere, someone is resting\non a day they said they wouldn't.",
+  "The couch will still be there after.\nIt's very loyal.",
+  "Run like your Garmin is watching.\nIt is.",
+  "Every kilometre is a kilometre\nyour past self didn't believe in.",
+  "Cascais to Praça do Comércio.\nOne foot at a time.",
+  "Chafe now.\nGlory later.",
+  "You didn't sign up for 42.2 km\nto feel comfortable.",
+  "Lisbon is flat.\nYour excuses don't have to be.",
+  "The finish line doesn't care\nhow fast you got there.",
+  "Today's easy run\nis tomorrow's confidence.",
+  "Blisters:\nnature's medal.",
+  "You've run trails.\nA road is basically a carpet.",
+  "October 10th is coming.\nAre you?",
+  "If it was easy, everyone would do it.\nMost people don't.",
+  "Your legs have carried you\nthrough 55 km of trail.\nThey'll manage this.",
+  "Rest days are training days\nin disguise.",
+  "The Tagus doesn't care about your pace.\nNeither should you.",
+  "One more km.\nThen maybe one more.",
+  "You signed up for this.\nThat already puts you ahead.",
+  "Progress is quiet.\nKeep going.",
+  "No one ever regretted\na run they showed up for.",
+  "Trust the plan.\nThe plan has been thinking about this\nlonger than you have.",
+  "On race day, you'll remember\nevery km you ran today.",
+];
+
+// ── HEADER RENDER ────────────────────────────────────────────────────────────
+// LMT logo SVG — bold retro serif, orange
+const LOGO_SVG = `<svg viewBox="0 0 220 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- L -->
+  <path d="M4 4 L4 56 L36 56 L36 47 L14 47 L14 4 Z" fill="#E8501A"/>
+  <path d="M4 4 Q4 4 14 4 L14 47 Q8 47 4 56 Q4 40 4 4Z" fill="#E8501A"/>
+  <!-- M -->
+  <path d="M42 4 L42 56 L52 56 L52 22 L66 44 L80 22 L80 56 L90 56 L90 4 L78 4 L66 26 L54 4 Z" fill="#E8501A"/>
+  <path d="M42 4 Q52 4 52 22 L52 56 L42 56 Z" fill="#E8501A"/>
+  <path d="M80 4 Q90 4 90 4 L90 56 L80 56 L80 22 Z" fill="#E8501A"/>
+  <!-- T -->
+  <path d="M96 4 L96 13 L118 13 L118 56 L128 56 L128 13 L150 13 L150 4 Z" fill="#E8501A"/>
+  <path d="M96 4 L150 4 Q150 13 128 13 L128 56 L118 56 L118 13 Q96 13 96 4Z" fill="#E8501A"/>
+</svg>`;
+
+function renderDailyQuote(){
+  const idx = new Date().getDate() % QUOTES.length;
+  const q = QUOTES[idx];
+  const race = new Date('2026-10-10');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const days = Math.max(0, Math.ceil((race - today) / 86400000));
+
+  const hdr = document.querySelector('#stickyTop .header');
+  if(hdr){
+    const qHtml = q.replace(/\n/g, '<br>');
+    hdr.innerHTML = `<div class="hdr-top-strip"></div>
+      <div class="hdr-body">
+        <div class="hdr-logo">${LOGO_SVG}</div>
+        <div class="hdr-right">
+          <span class="hdr-title">LISBON MARATHON <span class="dim">TRAINING</span></span>
+          <span class="hdr-quote-text">${qHtml}</span>
+        </div>
+      </div>`;
+  }
+
+  const cs = document.getElementById('countdown-strip');
+  if(cs){
+    if(days===0){
+      cs.innerHTML = `<span class="phasebar-countdown"><span class="cddtg">race</span> <span class="cdnum" style="color:#E8501A;">day!</span></span>`;
+    } else {
+      cs.innerHTML = `<span class="phasebar-countdown"><span class="cddtg">days to go</span> <span class="cdnum">${days}</span></span>`;
+    }
+  }
+}
+
+// Strava disabled for now
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('click',()=>{ if(openDropdown){ openDropdown=null; renderPhase(); }});
+
+const curW = getCurrentWeek();
+if(curW){
+  openWeeks[curW] = true;
+  PHASES.forEach((p,i)=>{ if(p.weeks.some(w=>w.n===curW)) activePhase=i; });
+}
+
+renderNav();
+document.getElementById('phaseNav').style.display = 'flex';
+document.getElementById('countdown-strip').style.display = 'block';
+document.getElementById('tab-strength').style.display = 'none';
+renderPhase();
+renderDailyQuote();
+setTimeout(initScrollSpy, 200);
+
+// scroll to current week done in init above
+
+// ── SERVICE WORKER ───────────────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+</script>
+</body>
+</html>
