@@ -11,8 +11,8 @@
 <meta name="description" content="Lisbon Marathon 2026 Training Plan">
 <link rel="manifest" href="manifest.json">
 <title>LMT</title>
-<link rel="icon" type="image/png" href="logo-1.png">
-<link rel="apple-touch-icon" href="logo-1.png">
+<link rel="icon" type="image/png" href="logo-3.png">
+<link rel="apple-touch-icon" href="logo-3.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;font-size:17px;}
@@ -28,34 +28,33 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
 /* ══════════════════════════════════════════════
    STICKY HEADER
 ══════════════════════════════════════════════ */
-.sticky-top{position:sticky;top:0;z-index:300;background:#fff;box-shadow:0 2px 0 #e8e8e8;}
+.sticky-top{position:static;background:#fff;border-bottom:1px solid #e8e8e8;}
 .header{width:100%;overflow:hidden;position:relative;background:#fff;}
 
 /* header — logo left, quote right */
 .hdr-top-strip{display:none;}
-.hdr-body{padding:28px 28px 24px;max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;}
+.hdr-body{padding:10px 28px;max-width:none;display:flex;flex-direction:row;align-items:center;gap:12px;}
 .hdr-logo{display:flex;align-items:center;justify-content:center;}
-.hdr-logo img{height:200px;width:200px;object-fit:contain;border-radius:12px;}
+.hdr-logo img{height:36px;width:36px;object-fit:contain;border-radius:4px;}
 .hdr-quote-text{
   font-family:Helvetica,Arial,sans-serif;
-  font-weight:400;
-  font-size:48px;
-  line-height:1.2;
-  color:#aaa;
-  letter-spacing:-0.5px;
-  max-width:760px;
+  font-weight:300;
+  font-size:15px;
+  line-height:1.4;
+  color:#888;
+  max-width:640px;
   display:block;
 }
-.hdr-countdown{display:flex;align-items:baseline;gap:6px;justify-content:center;margin-top:18px;}
+.hdr-countdown{display:flex;align-items:baseline;gap:5px;margin-left:auto;flex-shrink:0;}
 .hdr-cdnum{font-size:28px;font-weight:700;color:#087E8B;letter-spacing:-1px;line-height:1;}
 .hdr-cddtg{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#ccc;}
 
 /* ── MOBILE ── */
 @media(max-width:600px){
-  .hdr-body{padding:22px 16px 20px;gap:12px;}
-  .hdr-logo img{height:160px;width:160px;}
-  .hdr-quote-text{font-size:36px;}
-  .hdr-cdnum{font-size:24px;}
+  .hdr-body{padding:10px 16px;gap:10px;}
+  .hdr-logo img{height:36px;width:36px;}
+  .hdr-quote-text{font-size:14px;}
+
   .content{padding-left:16px;padding-right:16px;padding-top:14px;}
   #phase-nav-row > div{padding-left:16px;padding-right:16px;}
   .week-hdr{padding:16px 14px;}
@@ -75,12 +74,12 @@ body{padding-bottom:env(safe-area-inset-bottom);}
   .phase-btn,.top-tab{min-height:40px;}
 }
 
-.top-nav{display:flex;background:#fff;border-bottom:1px solid #e8e8e8;width:100%;}
+.top-nav{display:flex;background:#fff;border-bottom:1px solid #e8e8e8;width:100%;position:sticky;top:0;z-index:300;}
 .top-tab{flex:1;padding:13px 0;font-size:15px;cursor:pointer;border:none;background:none;color:#aaa;border-bottom:2px solid transparent;font-family:inherit;letter-spacing:0.01em;text-align:center;}
 .top-tab.active{color:#3C3C3C;border-bottom-color:#E8501A;font-weight:700;}
 
-.phase-nav{display:flex;gap:0;background:transparent;overflow-x:auto;}
-.phase-btn{padding:10px 14px;font-size:13px;cursor:pointer;border:none;background:none;color:#aaa;border-bottom:2px solid transparent;white-space:nowrap;font-family:inherit;}
+.phase-nav{display:flex;gap:0;background:transparent;width:100%;}
+.phase-btn{flex:1;padding:10px 0;font-size:13px;cursor:pointer;border:none;background:none;color:#aaa;border-bottom:2px solid transparent;font-family:inherit;text-align:center;}
 .phase-btn.active{color:#3C3C3C;border-bottom-color:#087E8B;font-weight:600;}
 .phasebar-countdown{font-size:11px;font-weight:700;font-family:Helvetica,Arial,sans-serif;white-space:nowrap;letter-spacing:0.08em;}
 .phasebar-countdown .cdnum{color:#087E8B;font-size:11px;}
@@ -123,7 +122,7 @@ body{padding-bottom:env(safe-area-inset-bottom);}
 .day-row:last-child{border-bottom:none;}
 .day-row.past{background:#fafafa;}
 .day-label{font-size:15px;color:#ccc;font-weight:600;}
-.tags-area{display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
+.tags-area{display:flex;flex-wrap:wrap;gap:6px 6px;align-items:center;row-gap:6px;}
 .day-main{min-width:0;}
 .day-text-display{font-size:16px;color:#3C3C3C;cursor:pointer;border-bottom:1px dashed transparent;transition:border-color 0.15s;word-break:break-word;line-height:1.4;display:inline;}
 .day-text-display:hover{border-bottom-color:#ccc;}
@@ -253,16 +252,14 @@ body{padding-bottom:env(safe-area-inset-bottom);}
 <div class="top-nav">
   <button class="top-tab active" onclick="showTab('plan')">Plan</button>
   <button class="top-tab" onclick="showTab('strength')">Strength</button>
-  <span id="sync-status" style="margin-left:auto;padding:0 16px;font-size:11px;color:#ccc;align-self:center;font-family:Helvetica,Arial,sans-serif;letter-spacing:0.05em;"></span>
+
 </div>
 <div id="strava-bar" class="strava-bar" style="display:none;"></div>
-<div id="phase-nav-row" style="background:#F5F5F5;border-bottom:1px solid #e8e8e8;">
-  <div style="max-width:960px;display:flex;align-items:center;padding:0 28px;">
-    <div class="phase-nav" id="phaseNav" style="flex:1;display:none;padding:0;"></div>
-    <div id="countdown-strip" style="display:none;white-space:nowrap;flex-shrink:0;padding-left:16px;"></div>
-  </div>
+<div id="phase-nav-row" style="background:#F5F5F5;border-bottom:1px solid #e8e8e8;display:flex;align-items:center;">
+  <div class="phase-nav" id="phaseNav" style="flex:1;display:none;"></div>
 </div>
 </div>
+<div style="text-align:right;padding:2px 16px;background:#F5F5F5;"><span id="sync-status" style="font-size:10px;color:#ccc;font-family:Helvetica,Arial,sans-serif;"></span></div>
 
 <!-- PLAN TAB -->
 <div id="tab-plan">
@@ -710,8 +707,7 @@ function showTab(tab){
   document.getElementById('tab-plan').style.display = tab==='plan' ? 'block' : 'none';
   document.getElementById('tab-strength').style.display = tab==='strength' ? 'block' : 'none';
   document.getElementById('phaseNav').style.display = tab==='plan' ? 'flex' : 'none';
-  const cs = document.getElementById('countdown-strip');
-  if(cs) cs.style.display = tab==='plan' ? 'block' : 'none';
+
   document.querySelectorAll('.top-tab').forEach((b,i)=>b.classList.toggle('active', (i===0&&tab==='plan')||(i===1&&tab==='strength')));
   if(tab==='strength') renderStrength();
 }
@@ -1444,7 +1440,7 @@ const QUOTES = [
 
 // ── HEADER RENDER ────────────────────────────────────────────────────────────
 // LMT logo SVG — bold retro serif, orange
-const LOGO_SVG = `<img src="logo-2.png" alt="LMT" style="height:200px;width:200px;object-fit:contain;border-radius:12px;">`;
+const LOGO_SVG = `<img src="logo-2.png" alt="LMT" style="height:36px;width:36px;object-fit:contain;border-radius:4px;">`;
 
 function renderDailyQuote(){
   const idx = new Date().getDate() % QUOTES.length;
@@ -1458,9 +1454,8 @@ function renderDailyQuote(){
     const qHtml = q.replace(/\n/g, '<br>');
     const cdHtml = days===0
       ? `<div class="hdr-countdown"><span class="hdr-cdnum" style="color:#E8501A;">Race day!</span></div>`
-      : `<div class="hdr-countdown"><span class="hdr-cdnum">${days}</span><span class="hdr-cddtg">days to go</span></div>`;
-    hdr.innerHTML = `<div class="hdr-top-strip"></div>
-      <div class="hdr-body">
+      : `<div class="hdr-countdown"><span class="hdr-cddtg">days to go</span>&nbsp;<span class="hdr-cdnum">${days}</span></div>`;
+    hdr.innerHTML = `<div class="hdr-body">
         <div class="hdr-logo">${LOGO_SVG}</div>
         <span class="hdr-quote-text">${qHtml}</span>
         ${cdHtml}
@@ -1483,7 +1478,6 @@ if(curW){
 
 renderNav();
 document.getElementById('phaseNav').style.display = 'flex';
-document.getElementById('countdown-strip').style.display = 'block';
 document.getElementById('tab-strength').style.display = 'none';
 renderPhase();
 renderDailyQuote();
