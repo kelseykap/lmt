@@ -53,7 +53,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   display:flex;justify-content:center;
 }
 #home-header img{
-  height:28px;
+  height:48px;
   width:auto;
   object-fit:contain;
 }
@@ -89,7 +89,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   display:flex;justify-content:center;
 }
 #home-arrow{
-  font-size:28px;color:rgba(255,254,223,0.5);cursor:pointer;
+  font-size:36px;font-weight:900;color:rgba(255,254,223,0.8);cursor:pointer;
   animation:bounce 2s infinite;
   user-select:none;
 }
@@ -1210,7 +1210,12 @@ function renderPhase(){
       const wopen = !!openWeeks[w.n];
       const RUN_TYPES_P = ['easy','workout','ml','long'];
       // total = planned run days only (fixed)
-      const totalRuns = w.days.filter(d => RUN_TYPES_P.includes(d.tag)).length;
+      const totalRuns = w.days.filter((d,i) => {
+        const s2 = state[dk(w.n,i)] || {};
+        const plannedActive = RUN_TYPES_P.includes(d.tag) && !s2.plannedHidden;
+        const hasAddedRun = (s2.added||[]).some(id => RUN_TYPES_P.includes(id));
+        return plannedActive || hasAddedRun;
+      }).length;
       // done = any run day (planned or added pill) with km logged
       const doneRuns = w.days.filter((d,i) => {
         const s2 = state[dk(w.n,i)] || {};
@@ -1254,9 +1259,9 @@ function renderPhase(){
       if(w.km === 'Race'){
         badgeHtml = `<span class="km-badge" style="background:#faeeda;color:#633806;">Race</span>`;
       } else {
-        const plannedLine = `<span class="km-planned-line">${plannedKmStr} km planned</span>`;
         const actualLine = actualRunKm > 0 ? `<span class="km-actual-badge">${fmt(actualRunKm)} km</span>` : '';
-        badgeHtml = `<div class="km-badge-wrap">${actualLine}${plannedLine}</div>`;
+        const sep = actualRunKm > 0 ? `<span class="km-planned-line"> / ${plannedKmStr} km</span>` : `<span class="km-planned-line">${plannedKmStr} km</span>`;
+        badgeHtml = `<div class="km-badge-wrap" style="flex-direction:row;align-items:baseline;gap:0;">${actualLine}${sep}</div>`;
       }
 
       fullHtml += `<div class="week${isCurrent?' current-week':''}" id="week-${w.n}">
