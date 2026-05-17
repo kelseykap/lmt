@@ -13,7 +13,12 @@
 <title>LMT</title>
 <link rel="icon" type="image/png" href="logo-3.png">
 <link rel="apple-touch-icon" href="logo-3.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&family=Barlow+Condensed:wght@700&display=swap" rel="stylesheet">
 <style>
+/* Aileron — use local file if available, else fall back to Barlow */
+@font-face{font-family:'Aileron';src:url('Aileron-Regular.otf') format('opentype');font-weight:400;}
+@font-face{font-family:'Aileron';src:url('Aileron-Bold.otf') format('opentype');font-weight:700;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;font-size:17px;}
 
@@ -32,7 +37,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
 /* ── HOME SCREEN ── */
 #home-screen{
   position:fixed;inset:0;z-index:10;
-  background:#fff;
+  background:#E8501A url('lmt-background.png') center center / cover no-repeat;
   display:flex;flex-direction:column;
   align-items:center;
   padding:env(safe-area-inset-top,0) 0 0;
@@ -48,22 +53,23 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   display:flex;justify-content:center;
 }
 #home-header img{
-  height:90px;width:90px;
+  height:28px;
+  width:auto;
   object-fit:contain;
-  border-radius:12px;
 }
 #home-quote-wrap{
   flex:1;
-  display:flex;align-items:flex-start;justify-content:center;
-  padding:40px 32px 0;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 32px 60px;
   text-align:center;
 }
 #home-quote{
-  font-family:Helvetica,Arial,sans-serif;
-  font-weight:300;
+  font-family:'Aileron',Helvetica,Arial,sans-serif;
+  font-weight:400;
   font-size:28px;
-  line-height:1.3;
-  color:#3C3C3C;
+  line-height:1.1;
+  color:#fffedf;
+  text-transform:uppercase;
   max-width:500px;
 }
 #home-stats{
@@ -74,27 +80,20 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   justify-content:center;
 }
 .home-stat{display:flex;flex-direction:column;align-items:center;gap:3px;}
-.home-stat-num{font-size:42px;font-weight:700;letter-spacing:-2px;line-height:1;}
-.home-stat-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#ccc;}
-.home-stat-num.teal{color:#087E8B;}
-.home-stat-num.orange{color:#E8501A;}
+.home-stat-num{font-size:42px;font-weight:700;letter-spacing:-2px;line-height:1;font-family:'Aileron',Helvetica,Arial,sans-serif;color:#fffedf;}
+.home-stat-lbl{font-size:10px;font-weight:400;text-transform:uppercase;letter-spacing:0.12em;color:#fffedf;opacity:0.7;font-family:'Aileron',Helvetica,Arial,sans-serif;}
+.home-stat-num.teal{color:#fffedf;}
+.home-stat-num.orange{color:#fffedf;}
 #home-actions{
-  display:flex;gap:16px;
-  padding:20px 0 max(32px, env(safe-area-inset-bottom,32px));
+  padding:12px 0 max(28px, env(safe-area-inset-bottom,28px));
+  display:flex;justify-content:center;
 }
-.home-action-btn{
-  flex:1;max-width:160px;
-  padding:14px 0;
-  background:none;
-  border:2px solid #e8e8e8;
-  border-radius:12px;
-  font-family:Helvetica,Arial,sans-serif;
-  font-size:16px;font-weight:700;
-  color:#3C3C3C;
-  cursor:pointer;
-  transition:border-color 0.15s, color 0.15s;
+#home-arrow{
+  font-size:28px;color:rgba(255,254,223,0.5);cursor:pointer;
+  animation:bounce 2s infinite;
+  user-select:none;
 }
-.home-action-btn:active{border-color:#E8501A;color:#E8501A;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 
 /* ── CONTENT PANEL ── */
 #content-panel{
@@ -338,8 +337,7 @@ body{padding-bottom:0;}
     <div id="home-km"></div>
   </div>
   <div id="home-actions">
-    <button class="home-action-btn" onclick="showTab('plan')">Plan</button>
-    <button class="home-action-btn" onclick="showTab('strength')">Strength</button>
+    <div id="home-arrow" onclick="showTab('plan')">↓</div>
   </div>
 </div>
 
@@ -1222,7 +1220,7 @@ function renderPhase(){
         return parseFloat(s2.kmActual) > 0;
       }).length;
       const isCurrent = w.n === currentWeek;
-      const wlabel = w.travel ? `W${w.n} — Travel` : w.cutback ? `W${w.n} — Cutback` : `W${w.n}`;
+      const wlabel = w.cutback ? `W${w.n} — Cutback` : `W${w.n}`;
       const curBadge = isCurrent ? `<span class="current-label">Current</span>` : '';
       const prog = totalRuns > 0 && doneRuns > 0
         ? `<span class="week-progress" id="prog-${w.n}"><span class="done-count">${doneRuns}</span>/${totalRuns} runs</span>`
@@ -1232,12 +1230,32 @@ function renderPhase(){
       w.days.forEach((_,i) => { const v = parseFloat((state[dk(w.n,i)]||{}).kmActual); if(!isNaN(v)) actualTotal += v; });
       const hasActual = actualTotal > 0;
 
+      // Compute planned km from day texts (parse first number from each run day's default text)
+      const RUN_TAGS_KM = ['easy','workout','ml','long'];
+      let plannedKm = 0;
+      w.days.forEach(d => {
+        if(RUN_TAGS_KM.includes(d.tag)){
+          const m = d.t.match(/^(\d+(?:\.\d+)?)/);
+          if(m) plannedKm += parseFloat(m[1]);
+        }
+      });
+      const plannedKmStr = plannedKm > 0 ? `${plannedKm}` : w.km;
+
+      // Compute actual run km and actual total km
+      let actualRunKm = 0;
+      w.days.forEach((d,i) => {
+        const s2 = state[dk(w.n,i)] || {};
+        const isRun = RUN_TAGS_KM.includes(d.tag) || (s2.added||[]).some(id=>RUN_TAGS_KM.includes(id));
+        if(isRun){ const v = parseFloat(s2.kmActual); if(!isNaN(v)) actualRunKm += v; }
+      });
+      const fmt = v => v%1===0?v:v.toFixed(1);
+
       let badgeHtml;
       if(w.km === 'Race'){
         badgeHtml = `<span class="km-badge" style="background:#faeeda;color:#633806;">Race</span>`;
       } else {
-        const plannedLine = `<span class="km-planned-line">${w.km} km</span>`;
-        const actualLine = hasActual ? `<span class="km-actual-badge">${actualTotal % 1 === 0 ? actualTotal : actualTotal.toFixed(1)} km</span>` : '';
+        const plannedLine = `<span class="km-planned-line">${plannedKmStr} km planned</span>`;
+        const actualLine = actualRunKm > 0 ? `<span class="km-actual-badge">${fmt(actualRunKm)} km</span>` : '';
         badgeHtml = `<div class="km-badge-wrap">${actualLine}${plannedLine}</div>`;
       }
 
@@ -1386,12 +1404,17 @@ function updateProgress(wn){
   for(const p of PHASES){ w = p.weeks.find(x=>x.n===wn); if(w) break; }
   if(!w) return;
   const RUN_TYPES_P = ['easy','workout','ml','long'];
-  const totalRuns = w.days.filter(d => RUN_TYPES_P.includes(d.tag)).length;
+  const totalRuns = w.days.filter((d,i)=>{
+    const s2 = state[dk(wn,i)] || {};
+    const plannedActive = RUN_TYPES_P.includes(d.tag) && !s2.plannedHidden;
+    const hasAddedRun = (s2.added||[]).some(id=>RUN_TYPES_P.includes(id));
+    return plannedActive || hasAddedRun;
+  }).length;
   const doneRuns = w.days.filter((d,i)=>{
     const s2 = state[dk(wn,i)] || {};
-    const isPlannedRun = RUN_TYPES_P.includes(d.tag);
+    const plannedActive = RUN_TYPES_P.includes(d.tag) && !s2.plannedHidden;
     const hasAddedRun = (s2.added||[]).some(id=>RUN_TYPES_P.includes(id));
-    return (isPlannedRun||hasAddedRun) && parseFloat(s2.kmActual) > 0;
+    return (plannedActive||hasAddedRun) && parseFloat(s2.kmActual) > 0;
   }).length;
   const el=document.getElementById(`prog-${wn}`);
   if(el) el.innerHTML = totalRuns>0&&doneRuns>0 ? `<span class="done-count">${doneRuns}</span>/${totalRuns} runs` : '';
@@ -1914,7 +1937,7 @@ function renderDailyQuote(){
 
   // Logo
   const homeHdr = document.getElementById('home-header');
-  if(homeHdr) homeHdr.innerHTML = `<img src="logo-2.png" alt="LMT">`;
+  if(homeHdr) homeHdr.innerHTML = `<img src="logo-home.png" alt="LMT">`;
 
   // Quote
   const homeQ = document.getElementById('home-quote');
