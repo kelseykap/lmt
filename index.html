@@ -52,10 +52,10 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   padding:36px 0 0;
   display:flex;justify-content:center;
 }
-#home-header img{
+#home-logo{
   height:48px;
-  width:auto;
-  object-fit:contain;
+  width:200px;
+  background:url('logo-home.png') center center / contain no-repeat;
 }
 #home-quote-wrap{
   flex:1;
@@ -1942,7 +1942,7 @@ function renderDailyQuote(){
 
   // Logo
   const homeHdr = document.getElementById('home-header');
-  if(homeHdr) homeHdr.innerHTML = `<img src="logo-home.png" alt="LMT">`;
+  if(homeHdr) homeHdr.innerHTML = `<div id="home-logo"></div>`;
 
   // Quote
   const homeQ = document.getElementById('home-quote');
