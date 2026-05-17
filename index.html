@@ -44,7 +44,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   pointer-events:none;
 }
 #home-header{
-  padding:48px 0 0;
+  padding:36px 0 0;
   display:flex;justify-content:center;
 }
 #home-header img{
@@ -54,8 +54,8 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
 }
 #home-quote-wrap{
   flex:1;
-  display:flex;align-items:center;justify-content:center;
-  padding:0 32px;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:40px 32px 0;
   text-align:center;
 }
 #home-quote{
@@ -78,6 +78,23 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
 .home-stat-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#ccc;}
 .home-stat-num.teal{color:#087E8B;}
 .home-stat-num.orange{color:#E8501A;}
+#home-actions{
+  display:flex;gap:16px;
+  padding:20px 0 max(32px, env(safe-area-inset-bottom,32px));
+}
+.home-action-btn{
+  flex:1;max-width:160px;
+  padding:14px 0;
+  background:none;
+  border:2px solid #e8e8e8;
+  border-radius:12px;
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:16px;font-weight:700;
+  color:#3C3C3C;
+  cursor:pointer;
+  transition:border-color 0.15s, color 0.15s;
+}
+.home-action-btn:active{border-color:#E8501A;color:#E8501A;}
 
 /* ── CONTENT PANEL ── */
 #content-panel{
@@ -305,23 +322,10 @@ body{padding-bottom:0;}
 .strava-status{color:#bbb;font-size:12px;}
 .strava-ok{color:#087E8B;font-weight:600;}
 .strava-err{color:#E8501A;}
-/* PWA splash — always orange on load */
-body{background:#E8501A;}
-#home-screen,#content-panel{background:#fff;}
-.splash-cover{
-  position:fixed;inset:0;background:#E8501A;
-  z-index:99999;
-  display:flex;align-items:center;justify-content:center;
-  animation:splashFade 0.5s 0.6s forwards;
-}
-.splash-cover img{height:100px;width:100px;object-fit:contain;border-radius:14px;}
-@keyframes splashFade{to{opacity:0;pointer-events:none;}}
+/* splash handled by manifest background_color */
 </style>
 </head>
 <body>
-
-<!-- ── SPLASH ─────────────────────────────────────── -->
-<div class="splash-cover"><img src="logo-2.png" alt="LMT"></div>
 
 <!-- ── HOME SCREEN ────────────────────────────────── -->
 <div id="home-screen">
@@ -332,6 +336,10 @@ body{background:#E8501A;}
   <div id="home-stats">
     <div id="home-countdown"></div>
     <div id="home-km"></div>
+  </div>
+  <div id="home-actions">
+    <button class="home-action-btn" onclick="showTab('plan')">Plan</button>
+    <button class="home-action-btn" onclick="showTab('strength')">Strength</button>
   </div>
 </div>
 
@@ -1850,8 +1858,9 @@ The race is coming.`,
   `This is the last week
 before race week.
 Feel proud of that.`,
-  `Three days out.
-Rest. Eat. Visualise. Believe.`,
+  `Almost there.
+You have done every bit of the work.
+Believe it.`,
   `Two days to Lisbon.
 You are ready.
 You have always been ready.`,
@@ -1932,7 +1941,7 @@ function renderKmTotal(){
   const el = document.getElementById('home-km');
   if(!el) return;
   if(total > 0){
-    el.innerHTML = `<div class="home-stat"><span class="home-stat-num orange">${total%1===0?total:total.toFixed(1)}</span><span class="home-stat-lbl">km run</span></div>`;
+    el.innerHTML = `<div class="home-stat"><span class="home-stat-num teal">${total%1===0?total:total.toFixed(1)}</span><span class="home-stat-lbl">km run</span></div>`;
   } else {
     el.innerHTML = '';
   }
