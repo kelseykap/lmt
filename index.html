@@ -305,14 +305,23 @@ body{padding-bottom:0;}
 .strava-status{color:#bbb;font-size:12px;}
 .strava-ok{color:#087E8B;font-weight:600;}
 .strava-err{color:#E8501A;}
-/* PWA splash */
-@media(display-mode:standalone){
-  body::before{content:'';display:block;position:fixed;inset:0;background:#E8501A;z-index:9999;animation:splash 0.8s 0.3s forwards;}
-  @keyframes splash{to{opacity:0;pointer-events:none;}}
+/* PWA splash — always orange on load */
+body{background:#E8501A;}
+#home-screen,#content-panel{background:#fff;}
+.splash-cover{
+  position:fixed;inset:0;background:#E8501A;
+  z-index:99999;
+  display:flex;align-items:center;justify-content:center;
+  animation:splashFade 0.5s 0.6s forwards;
 }
+.splash-cover img{height:100px;width:100px;object-fit:contain;border-radius:14px;}
+@keyframes splashFade{to{opacity:0;pointer-events:none;}}
 </style>
 </head>
 <body>
+
+<!-- ── SPLASH ─────────────────────────────────────── -->
+<div class="splash-cover"><img src="logo-2.png" alt="LMT"></div>
 
 <!-- ── HOME SCREEN ────────────────────────────────── -->
 <div id="home-screen">
@@ -1891,25 +1900,26 @@ function renderDailyQuote(){
   const race = new Date('2026-10-10');
   const today = new Date(); today.setHours(0,0,0,0);
   const days = Math.max(0, Math.ceil((race - today) / 86400000));
-  // Use day-of-year offset from May 16 so each calendar day gets a unique quote
   const dayOfYear = Math.floor((today - new Date(today.getFullYear(),0,0)) / 86400000);
   const q = days === 0 ? RACE_DAY_QUOTE : QUOTES[dayOfYear % QUOTES.length];
 
-  const hdr = document.querySelector('#stickyTop .header');
-  if(hdr){
-    const qHtml = q.replace(/\n/g, '<br>');
-    const cdHtml = days===0
-      ? `<div class="hdr-countdown"><span class="hdr-cdnum" style="color:#E8501A;">Race day!</span></div>`
-      : `<div class="hdr-countdown"><span class="hdr-cddtg">days to go</span>&nbsp;<span class="hdr-cdnum">${days}</span></div>`;
-    hdr.innerHTML = `<div class="hdr-body">
-        <div class="hdr-logo">${LOGO_SVG}</div>
-        <span class="hdr-quote-text">${qHtml}</span>
-        ${cdHtml}
-      <div class='hdr-km-total' id='hdr-km-total'></div>
-      </div>`;
-  }
+  // Logo
+  const homeHdr = document.getElementById('home-header');
+  if(homeHdr) homeHdr.innerHTML = `<img src="logo-2.png" alt="LMT">`;
 
-  // countdown is now in the header
+  // Quote
+  const homeQ = document.getElementById('home-quote');
+  if(homeQ) homeQ.innerHTML = q.replace(/\n/g,'<br>');
+
+  // Countdown
+  const homeCd = document.getElementById('home-countdown');
+  if(homeCd){
+    if(days===0){
+      homeCd.innerHTML = `<div class="home-stat"><span class="home-stat-num orange">Go!</span><span class="home-stat-lbl">Race day</span></div>`;
+    } else {
+      homeCd.innerHTML = `<div class="home-stat"><span class="home-stat-num teal">${days}</span><span class="home-stat-lbl">days to go</span></div>`;
+    }
+  }
 }
 
 
