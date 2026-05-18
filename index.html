@@ -121,7 +121,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 #tab-bar{
   display:flex;flex-direction:column;
   background:transparent;
-  padding:calc(36px + 48px + 12px) 20px 0;
+  padding:calc(36px + 48px + 20px) 20px 0;
   flex-shrink:0;
 }
 .tab-row{display:flex;align-items:baseline;gap:12px;}
@@ -137,7 +137,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
   transition:font-weight 0.1s;
 }
 .top-tab.active{font-weight:900;}
-#tab-divider{height:2px;background:rgba(255,254,223,0.4);margin:14px -20px 0;}
+#tab-divider{height:3px;background:rgba(255,254,223,0.5);margin:14px -20px 0;}
 
 /* ── PHASE NAV ── */
 #phase-nav-row{background:#423d3d;flex-shrink:0;padding:0 20px;}
@@ -189,6 +189,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 .week-date{font-size:15px;color:#bbb;font-weight:400;margin-left:6px;}
 .week-phase-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#bbb;}
 .current-label{display:none;}
+.week-run-icons{display:flex;gap:5px;margin-bottom:10px;width:100%;}
 .run-icon{flex:1;height:6px;border-radius:3px;border:1.5px solid #e98260;background:transparent;transition:background 0.15s;}
 .run-icon.filled{background:#e98260;border-color:#e98260;}
 .run-icon:not(.filled){border-width:1px;border-color:rgba(233,130,96,0.35);}
@@ -209,7 +210,30 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 .day-col-left{grid-column:1;display:flex;align-items:flex-start;padding-top:2px;}
 .day-col-middle{grid-column:2;display:flex;flex-direction:column;gap:5px;min-width:0;}
 .day-col-right{grid-column:3;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;}
-.day-check{width:20px;height:20px;cursor:pointer;accent-color:#93c47e;flex-shrink:0;margin:0;}
+.day-check{
+  appearance:none;-webkit-appearance:none;
+  width:18px;height:18px;
+  border-radius:3px;
+  border:1.5px solid #bbb;
+  background:transparent;
+  cursor:pointer;flex-shrink:0;margin:0;
+  position:relative;
+  transition:background 0.15s, border-color 0.15s;
+}
+.day-check:checked{
+  background:#93c47e;
+  border-color:#93c47e;
+}
+.day-check:checked::after{
+  content:'';
+  position:absolute;
+  left:4px;top:1px;
+  width:5px;height:9px;
+  border:2px solid #fff;
+  border-top:none;border-left:none;
+  transform:rotate(45deg);
+  display:block;
+}
 .day-row.done .day-main{opacity:0.35;}
 .day-row.done .tags-area{opacity:0.4;}
 .day-col-km{display:flex;align-items:center;justify-content:flex-end;}
