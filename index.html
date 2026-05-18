@@ -74,12 +74,14 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
 }
 #home-stats{
   display:flex;
-  gap:32px;
+  gap:0;
   padding:0 0 24px;
   align-items:flex-end;
   justify-content:center;
+  width:100%;
+  max-width:360px;
 }
-.home-stat{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.home-stat{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;padding:0 16px;}
 .home-stat-num{font-size:42px;font-weight:700;letter-spacing:-2px;line-height:1;font-family:'Aileron',Helvetica,Arial,sans-serif;color:#fffedf;}
 .home-stat-lbl{font-size:10px;font-weight:400;text-transform:uppercase;letter-spacing:0.12em;color:#fffedf;opacity:0.7;font-family:'Aileron',Helvetica,Arial,sans-serif;}
 .home-stat-num.teal{color:#fffedf;}
@@ -101,23 +103,24 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   display:flex;flex-direction:column;
   transform:translateY(100vh);
   transition:transform 0.42s cubic-bezier(.4,0,.2,1);
-  background:#111;
+  background:#423d3d;
   padding-top:env(safe-area-inset-top,0);
   overflow:hidden;
 }
 #content-panel.open{transform:translateY(0);}
-#content-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#111;}
+#content-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#423d3d;}
 
 /* ── TAB BAR (PLAN / STRENGTH headings) ── */
 #tab-bar{
   display:flex;flex-direction:column;
-  background:#111;
+  background:#423d3d;
   padding:20px 20px 0;
   flex-shrink:0;
 }
 #content-logo{
-  height:28px;width:200px;
-  background:url('logo-home.png') left center / contain no-repeat;
+  height:28px;
+  width:100%;
+  background:url('logo-home.png') center center / contain no-repeat;
   margin-bottom:18px;
 }
 .top-tab{
@@ -135,13 +138,13 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
 #tab-divider{height:1px;background:rgba(255,254,223,0.15);margin:16px 20px 0;}
 
 /* ── PHASE NAV ── */
-#phase-nav-row{background:#111;flex-shrink:0;padding:0 20px;}
+#phase-nav-row{background:#423d3d;flex-shrink:0;padding:0 20px;}
 .phase-nav{display:flex;width:100%;background:transparent;border-bottom:1px solid rgba(255,255,255,0.1);}
 .phase-btn{flex:1;padding:12px 0;font-size:12px;cursor:pointer;border:none;background:none;color:rgba(255,255,255,0.35);border-bottom:2px solid transparent;font-family:inherit;text-align:center;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;}
 .phase-btn.active{color:#fff;border-bottom-color:#E8501A;}
 
 /* strava */
-.strava-bar{display:flex;align-items:center;gap:10px;padding:8px 20px;background:#111;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px;flex-shrink:0;}
+.strava-bar{display:flex;align-items:center;gap:10px;padding:8px 20px;background:#423d3d;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px;flex-shrink:0;}
 .strava-btn{background:#E8501A;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
 .strava-status{color:rgba(255,255,255,0.4);font-size:13px;}
 .strava-ok{color:#E8501A;font-weight:600;}
@@ -185,17 +188,18 @@ body{padding-bottom:0;}
 .week-date{font-size:15px;color:#bbb;font-weight:400;margin-left:6px;}
 .week-phase-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#bbb;}
 .current-label{font-size:10px;font-weight:700;background:#E8501A;color:#fff;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle;}
-/* run icons */
-.week-run-icons{display:flex;gap:7px;margin-bottom:8px;align-items:center;}
-.run-icon{width:12px;height:12px;border-radius:50%;border:2px solid #E8501A;display:inline-block;flex-shrink:0;background:transparent;transition:background 0.15s;}
-.run-icon.filled{background:#E8501A;}
+/* run icons — rounded rects spanning full card width */
+.week-run-icons{display:flex;gap:5px;margin-bottom:10px;width:100%;}
+.run-icon{flex:1;height:6px;border-radius:3px;border:1.5px solid #e98260;background:transparent;transition:background 0.15s;}
+.run-icon.filled{background:#e98260;border-color:#e98260;}
+.run-icon:not(.filled){border-width:1px;border-color:rgba(233,130,96,0.35);}
 /* stats row */
 .week-stats-row{display:flex;justify-content:space-between;align-items:center;}
-.week-runs-stat{font-size:14px;color:#111;}
+.week-runs-stat{font-size:15px;color:#111;font-weight:400;}
 .week-runs-stat .done-count{font-weight:700;color:#111;}
 .km-badge-wrap{display:flex;align-items:baseline;gap:0;}
-.km-actual-badge{font-size:14px;font-weight:700;color:#111;}
-.km-planned-line{font-size:14px;color:#bbb;font-weight:400;}
+.km-actual-badge{font-size:15px;font-weight:700;color:#111;}
+.km-planned-line{font-size:15px;color:#bbb;font-weight:400;}
 .chevron{display:none;}
 .km-badge{display:none;}
 .week-body{display:none;border-top:1px solid #f0f0f0;border-radius:0 0 8px 8px;overflow:visible;}
@@ -215,7 +219,7 @@ body{padding-bottom:0;}
 .day-text-input{font-size:16px;color:#3C3C3C;border:none;border-bottom:1px solid #aaa;background:transparent;outline:none;font-family:inherit;width:100%;resize:none;height:22px;line-height:22px;padding:0;overflow:hidden;display:block;}
 .day-row.drag-target-day{background:#f0fafb;outline:2px dashed #087E8B;outline-offset:-2px;border-radius:4px;}
 .missed-label{font-size:9px;font-weight:700;color:#E8501A;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;padding-right:6px;opacity:0.7;}
-.day-row.missed-run .t-easy,.day-row.missed-run .t-workout,.day-row.missed-run .t-ml,.day-row.missed-run .t-long{background:#f5d5c8 !important;color:#c9886a !important;}
+.day-row.missed-run .t-easy,.day-row.missed-run .t-workout,.day-row.missed-run .t-ml,.day-row.missed-run .t-long{background:#e0c4b8 !important;color:#a0786a !important;}
 .note-preview{font-size:11px;color:#bbb;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;line-height:1.3;}
 .note-preview:hover{color:#777;}
 .note-add{color:transparent;font-style:italic;transition:color 0.15s;}
@@ -225,16 +229,16 @@ body{padding-bottom:0;}
 /* tags — run types: tonal teal; activity types: individual palette colours */
 .tag{display:inline-block;padding:4px 11px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;vertical-align:middle;letter-spacing:0.01em;}
 /* run types — tonal teal from light → dark */
-.t-easy{background:#E8501A;color:#fff;}
-.t-ml{background:#E8501A;color:#fff;}
-.t-workout{background:#E8501A;color:#fff;}
-.t-long{background:#E8501A;color:#fff;}
+.t-easy{background:#e98260;color:#fffedf;}
+.t-ml{background:#e98260;color:#fffedf;}
+.t-workout{background:#e98260;color:#fffedf;}
+.t-long{background:#e98260;color:#fffedf;}
 /* strength */
-.t-sa,.t-sb,.t-sl,.t-strength{background:#f0d4c8;color:#c0532a;}
+.t-sa,.t-sb,.t-sl,.t-strength{background:#e2b279;color:#fffedf;}
 /* activities */
-.t-yoga{background:#dde4ed;color:#5a7899;}
-.t-hike{background:#dde4ed;color:#5a7899;}
-.t-swim{background:#dde4ed;color:#5a7899;}
+.t-yoga{background:#98b2bf;color:#fffedf;}
+.t-hike{background:#98b2bf;color:#fffedf;}
+.t-swim{background:#98b2bf;color:#fffedf;}
 .t-pilates{background:#fde5dc;color:#E8501A;}
 .t-padel{background:#fde8df;color:#b83c14;}
 .t-rest{background:#f0f0f0;color:#aaa;}
@@ -256,14 +260,14 @@ body{padding-bottom:0;}
 .drop-pills{display:flex;flex-wrap:wrap;gap:4px;padding:0 4px 6px;}
 .drop-pill{padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all 0.12s;}
 .drop-pill:hover{filter:brightness(0.93);}
-.dp-easy{background:#E8501A;color:#fff;}
-.dp-ml{background:#E8501A;color:#fff;}
-.dp-workout{background:#E8501A;color:#fff;}
-.dp-long{background:#E8501A;color:#fff;}
-.dp-strength{background:#f0d4c8;color:#c0532a;}
-.dp-yoga{background:#dde4ed;color:#5a7899;}
-.dp-hike{background:#dde4ed;color:#5a7899;}
-.dp-swim{background:#dde4ed;color:#5a7899;}
+.dp-easy{background:#e98260;color:#fffedf;}
+.dp-ml{background:#e98260;color:#fffedf;}
+.dp-workout{background:#e98260;color:#fffedf;}
+.dp-long{background:#e98260;color:#fffedf;}
+.dp-strength{background:#e2b279;color:#fffedf;}
+.dp-yoga{background:#98b2bf;color:#fffedf;}
+.dp-hike{background:#98b2bf;color:#fffedf;}
+.dp-swim{background:#98b2bf;color:#fffedf;}
 .dp-pilates{background:#fde5dc;color:#E8501A;}
 .dp-padel{background:#fde8df;color:#b83c14;}
 .dp-rest{background:#ebebeb;color:#999;}
@@ -285,10 +289,7 @@ body{padding-bottom:0;}
 .btn-delete-note{font-size:11px;color:#E8501A;background:none;border:none;cursor:pointer;font-family:inherit;margin-left:auto;}
 .btn-delete-note:hover{color:#cc2a2f;}
 .week-progress{font-size:11px;color:#ccc;margin-left:8px;}
-.done-count{color:#087E8B;font-weight:600;}
-.km-badge-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
-.km-actual-badge{font-size:11px;font-weight:600;color:#087E8B;}
-.km-planned-line{font-size:10px;color:#ccc;}
+/* km stats now defined in week-card section above */
 
 /* strength tab */
 .strength-page{padding:20px 28px;display:none;border-top:none;}
@@ -1228,7 +1229,7 @@ function renderPhase(){
         return parseFloat(s2.kmActual) > 0;
       }).length;
       const isCurrent = w.n === currentWeek;
-      const wlabel = w.cutback ? `W${w.n} — Cutback` : `W${w.n}`;
+      const wlabel = w.travel ? `W${w.n} — Travel` : w.cutback ? `W${w.n} — Cutback` : `W${w.n}`;
       const curBadge = isCurrent ? `<span class="current-label">Current</span>` : '';
       const prog = totalRuns > 0 && doneRuns > 0
         ? `<span class="week-progress" id="prog-${w.n}"><span class="done-count">${doneRuns}</span>/${totalRuns} runs</span>`
@@ -1262,9 +1263,9 @@ function renderPhase(){
       if(w.km === 'Race'){
         badgeHtml = `<span class="km-badge" style="background:#faeeda;color:#633806;">Race</span>`;
       } else {
-        const actualLine = actualRunKm > 0 ? `<span class="km-actual-badge">${fmt(actualRunKm)} km</span>` : '';
-        const sep = actualRunKm > 0 ? `<span class="km-planned-line"> / ${plannedKmStr} km</span>` : `<span class="km-planned-line">${plannedKmStr} km</span>`;
-        badgeHtml = `<div class="km-badge-wrap" style="flex-direction:row;align-items:baseline;gap:0;">${actualLine}${sep}</div>`;
+        const actualLine = actualRunKm > 0 ? `<span class="km-actual-badge">${fmt(actualRunKm)}</span>` : '';
+        const sep = actualRunKm > 0 ? `<span class="km-planned-line">/${plannedKmStr}km</span>` : `<span class="km-planned-line">${plannedKmStr}km</span>`;
+        badgeHtml = `<div class="km-badge-wrap">${actualLine}${sep}</div>`;
       }
 
       // Run icons
@@ -1290,7 +1291,7 @@ function renderPhase(){
             <div>
               <span class="week-title">${wlabel}</span>
               <span class="week-date">${w.date}</span>
-              ${isCurrent ? '<span class="current-label">Now</span>' : ''}
+              ${isCurrent ? '<span class="current-label">Current</span>' : ''}
             </div>
             <span class="week-phase-label">${phaseLabel}</span>
           </div>
@@ -1581,9 +1582,7 @@ function saveKm(wn, di, val){
   const hasActual=actualTotal>0;
   const wrap=document.querySelector(`#week-${wn} .km-badge-wrap`);
   if(wrap){
-    const plannedLine=`<span class="km-planned-line">${w.km} km</span>`;
-    const actualLine=hasActual?`<span class="km-actual-badge">${actualTotal%1===0?actualTotal:actualTotal.toFixed(1)} km</span>`:'';
-    wrap.innerHTML=actualLine+plannedLine;
+// km badge is rebuilt by renderPhase; saveKm triggers updateProgress only
   }
   refreshKmCol(wn,di); // updates missed-run class
   updateProgress(wn);
