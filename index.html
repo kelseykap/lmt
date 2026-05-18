@@ -134,7 +134,6 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
   color:#fffedf;text-align:left;
   cursor:pointer;line-height:1.1;
   letter-spacing:-0.5px;
-  transition:font-weight 0.1s;
 }
 .top-tab.active{font-weight:900;}
 #tab-divider{height:3px;background:#fffedf;margin:14px -20px 0;}
@@ -388,9 +387,14 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 <div id="content-panel">
   <!-- tab bar with logo + headings -->
   <div id="tab-bar">
-    <button class="top-tab active" id="tab-btn-plan" onclick="showTab('plan')">Plan</button>
-    <button class="top-tab" id="tab-btn-strength" onclick="showTab('strength')">Strength</button>
-    <button class="top-tab" id="tab-btn-phases" onclick="showTab('phases')">Phases</button>
+    <div class="tab-row">
+      <button class="top-tab active" id="tab-btn-plan" onclick="showTab('plan')">Plan</button>
+      <button class="top-tab" id="tab-btn-phases" onclick="showTab('phases')">Phases</button>
+    </div>
+    <div class="tab-row">
+      <button class="top-tab" id="tab-btn-strength" onclick="showTab('strength')">Strength</button>
+      <button class="top-tab" id="tab-btn-today" onclick="showTab('today')">Today</button>
+    </div>
   </div>
   <div id="tab-divider"></div>
   <!-- scrollable content -->
@@ -405,6 +409,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
     <div id="tab-phases" class="phases-page" style="display:none;">
       <div id="phases-content"></div>
     </div>
+    <!-- Today tab shares the same #content div — just a different scroll/open state -->
   </div>
   <!-- strava bar pinned to bottom -->
   <div id="strava-bar" class="strava-bar" style="display:none;"></div>
@@ -844,12 +849,44 @@ function escA(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
 // ── TOP TAB ──────────────────────────────────────────────────────────────────
 function showTab(tab, scroll){
   activeTopTab = tab;
-  document.getElementById('tab-plan').style.display = tab==='plan' ? 'block' : 'none';
+  // Plan and Today both show the plan content div
+  const showPlan = tab==='plan' || tab==='today';
+  document.getElementById('tab-plan').style.display = showPlan ? 'block' : 'none';
   document.getElementById('tab-strength').style.display = tab==='strength' ? 'block' : 'none';
   document.getElementById('tab-phases').style.display = tab==='phases' ? 'block' : 'none';
+
   document.querySelectorAll('.top-tab').forEach(b => b.classList.remove('active'));
-  const btnId = tab==='plan'?'tab-btn-plan':tab==='strength'?'tab-btn-strength':'tab-btn-phases';
+  const btnId = tab==='plan'?'tab-btn-plan':tab==='strength'?'tab-btn-strength':tab==='phases'?'tab-btn-phases':'tab-btn-today';
   document.getElementById(btnId)?.classList.add('active');
+
+  if(tab==='plan'){
+    // Close all weeks and scroll to top
+    openWeeks = {};
+    renderPhase();
+    const cs = document.getElementById('content-scroll');
+    if(cs) cs.scrollTo({top: 0, behavior: 'smooth'});
+  }
+  if(tab==='strength' || tab==='phases'){
+    const cs = document.getElementById('content-scroll');
+    if(cs) cs.scrollTo({top: 0, behavior: 'instant'});
+  }
+  if(tab==='today'){
+    openWeeks = {};
+    if(curW) openWeeks[curW] = true;
+    renderPhase();
+    setTimeout(()=>{
+      const cs = document.getElementById('content-scroll');
+      const el = document.getElementById(`week-${curW}`);
+      if(cs && el){
+        // getBoundingClientRect gives position relative to viewport
+        // cs.scrollTop + el position relative to cs top = target scroll
+        const csRect = cs.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        const scrollTarget = cs.scrollTop + (elRect.top - csRect.top) - 20;
+        cs.scrollTo({top: scrollTarget, behavior: 'smooth'});
+      }
+    }, 100);
+  }
   if(tab==='strength') renderStrength();
   if(tab==='phases') renderPhases();
   openContentPanel();
