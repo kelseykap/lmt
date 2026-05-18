@@ -368,6 +368,9 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 <!-- Global logo — always on top -->
 <div id="global-logo" onclick="closeContentPanel()"></div>
 
+<!-- Dropdown portal — outside content-panel so transform doesn't trap it -->
+<div id="dropdown-portal" style="position:fixed;inset:0;z-index:9999;pointer-events:none;"></div>
+
 <!-- ── HOME SCREEN ────────────────────────────────── -->
 <div id="home-screen">
   <div id="home-header"></div>
@@ -1310,7 +1313,7 @@ function dayDrop(evt, wn, di){
     if(tagsEl){
       const pw=findWeek(w2); const pd=pw?.days[d2];
       const k2=dk(w2,d2);
-      if(pd) tagsEl.innerHTML=plannedTagHtml(pd.tag,w2,d2,!!state[k2]?.plannedHidden)+addedTagsHtml(state[k2]||{},w2,d2);
+      if(pd) refreshTagsArea(w2,d2);
     }
     refreshKmCol(w2,d2);
   });
@@ -1529,7 +1532,6 @@ function renderPhase(){
               ${addedTagsHtml(s, w.n, di)}
               <div style="position:relative;display:inline-flex;">
                 <button class="add-btn" onclick="toggleDropdown(event,${w.n},${di})" title="Add activity">+</button>
-                ${dropOpen ? buildDropdown(w.n, di, s) : ''}
               </div>
             </div>
             <div class="day-main">${textDisplay}</div>
@@ -1560,8 +1562,7 @@ function renderPhase(){
 
 function buildDropdown(wn, di, s){
   const added = s.added || [];
-  const pos = openDropdownRect ? `top:${openDropdownRect.top}px;right:${openDropdownRect.right}px;` : '';
-  let h = `<div class="add-dropdown" id="drop-${wn}-${di}" style="${pos}" onclick="event.stopPropagation()">`;
+  let h = '';
   EXTRA_OPTIONS.forEach(section => {
     h += `<div class="drop-section">${section.section}</div><div class="drop-pills">`;
     section.items.forEach(item => {
@@ -1570,7 +1571,6 @@ function buildDropdown(wn, di, s){
     });
     h += `</div>`;
   });
-  h += `</div>`;
   return h;
 }
 
@@ -1691,6 +1691,18 @@ function refreshKmCol(wn, di){
   topRight.innerHTML = kmHtml;
 }
 
+function refreshTagsArea(wn, di){
+  const tagsEl = document.getElementById(`tags-${wn}-${di}`);
+  if(!tagsEl) return;
+  const w = findWeek(wn); if(!w) return;
+  const day = w.days[di]; if(!day) return;
+  const k = dk(wn,di); const s = state[k]||{};
+  tagsEl.innerHTML =
+    plannedTagHtml(day.tag,wn,di,!!s.plannedHidden) +
+    addedTagsHtml(s,wn,di) +
+    `<div style="position:relative;display:inline-flex;"><button class="add-btn" onclick="toggleDropdown(event,${wn},${di})" title="Add activity">+</button></div>`;
+}
+
 function togglePlannedTag(wn, di){
   const k=dk(wn,di); if(!state[k]) state[k]={};
   state[k].plannedHidden = !state[k].plannedHidden; save();
@@ -1699,24 +1711,50 @@ function togglePlannedTag(wn, di){
   if(tagsEl){
     const w=findWeek(wn); const day=w?w.days[di]:null; if(!day) return;
     const s=state[k];
-    tagsEl.innerHTML=plannedTagHtml(day.tag,wn,di,s.plannedHidden)+addedTagsHtml(s,wn,di);
+    refreshTagsArea(wn,di);
   }
   // add-btn is in day-col-add, not affected by tag updates
   refreshKmCol(wn,di);
 }
 
+function renderDropdownPortal(){
+  const portal = document.getElementById('dropdown-portal');
+  if(!portal) return;
+  if(!openDropdown){ portal.innerHTML=''; portal.style.pointerEvents='none'; return; }
+  const [wn,di] = openDropdown.split('-').map(Number);
+  const w = findWeek(wn); if(!w){ portal.innerHTML=''; return; }
+  const s = state[dk(wn,di)]||{};
+  const r = openDropdownRect;
+  if(!r){ portal.innerHTML=''; return; }
+  const posStyle = [
+    r.top    != null ? `top:${r.top}px`       : '',
+    r.bottom != null ? `bottom:${r.bottom}px` : '',
+    r.left   != null ? `left:${r.left}px`     : '',
+    r.right  != null ? `right:${r.right}px`   : '',
+  ].filter(Boolean).join(';');
+  portal.style.pointerEvents = 'auto';
+  portal.innerHTML = `<div class="add-dropdown" id="drop-${wn}-${di}" style="${posStyle}" onclick="event.stopPropagation()">${buildDropdown(wn,di,s)}</div>`;
+}
+
 function toggleDropdown(evt,wn,di){
   evt.stopPropagation();
   const key=`${wn}-${di}`;
-  if(openDropdown===key){ openDropdown=null; openDropdownRect=null; }
-  else {
-    openDropdown=key;
-    // Store button position for fixed dropdown placement
-    const btn = evt.currentTarget;
-    const r = btn.getBoundingClientRect();
-    openDropdownRect = {top: r.bottom + 4, right: window.innerWidth - r.right};
-  }
-  renderPhase();
+  if(openDropdown===key){ openDropdown=null; openDropdownRect=null; renderDropdownPortal(); return; }
+  openDropdown=key;
+  const btn = evt.currentTarget;
+  const r = btn.getBoundingClientRect();
+  const dropW = 210;
+  const margin = 8;
+  const vw = window.innerWidth;
+  let left = null, right = null;
+  if(r.right - dropW >= margin){ right = vw - r.right; }
+  else { left = Math.max(margin, r.left); }
+  const dropH = 300;
+  let top = null, bottom = null;
+  if(r.bottom + dropH < window.innerHeight - margin){ top = r.bottom + 4; }
+  else { bottom = window.innerHeight - r.top + 4; }
+  openDropdownRect = {top, bottom, left, right};
+  renderDropdownPortal();
 }
 let openDropdownRect = null;
 
@@ -1732,7 +1770,7 @@ function toggleAdded(wn,di,id){
   if(tagsEl){
     const w=findWeek(wn); const day=w?w.days[di]:null; if(!day) return;
     const s=state[k];
-    tagsEl.innerHTML=plannedTagHtml(day.tag,wn,di,!!s.plannedHidden)+addedTagsHtml(s,wn,di);
+    refreshTagsArea(wn,di);
   }
   // close the dropdown in DOM
   const drop=document.getElementById(`drop-${wn}-${di}`);
@@ -1752,7 +1790,7 @@ function removeAdded(evt,wn,di,id){
   if(tagsEl){
     const w=findWeek(wn); const day=w?w.days[di]:null; if(!day) return;
     const s=state[k];
-    tagsEl.innerHTML=plannedTagHtml(day.tag,wn,di,!!s.plannedHidden)+addedTagsHtml(s,wn,di);
+    refreshTagsArea(wn,di);
   }
   // add-btn is in day-col-add, not affected by tag updates
   refreshKmCol(wn,di);
@@ -2294,7 +2332,7 @@ async function stravaHandleCallback(){
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
-document.addEventListener('click',()=>{ if(openDropdown){ openDropdown=null; renderPhase(); }});
+document.addEventListener('click',()=>{ if(openDropdown){ openDropdown=null; openDropdownRect=null; renderDropdownPortal(); renderPhase(); }});
 
 const curW = getCurrentWeek();
 if(curW){
