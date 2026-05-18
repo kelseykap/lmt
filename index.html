@@ -121,7 +121,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 #tab-bar{
   display:flex;flex-direction:column;
   background:transparent;
-  padding:calc(36px + 48px + 36px) 20px 0;
+  padding:calc(36px + 48px + 36px) 32px 0;
   flex-shrink:0;
 }
 .tab-row{display:flex;align-items:baseline;gap:12px;}
@@ -136,7 +136,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
   letter-spacing:-0.5px;
 }
 .top-tab.active{font-weight:900;}
-#tab-divider{height:3px;background:#fffedf;margin:14px -20px 0;}
+#tab-divider{height:3px;background:#fffedf;margin:14px -32px 0;}
 
 /* ── PHASE NAV ── */
 #phase-nav-row{background:#423d3d;flex-shrink:0;padding:0 20px;}
@@ -203,7 +203,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 .week-body.open{display:block;}
 
 /* day row — 3 cols: left(day+add) | middle(pills+notes) | right(check+km) */
-.day-row{display:grid;grid-template-columns:52px 1fr 44px;gap:0 2px;padding:12px 16px;border-bottom:1px solid #f0f0f0;position:relative;background:#fff;}
+.day-row{display:grid;grid-template-columns:52px 1fr 44px;gap:0 2px;padding:12px 16px;border-bottom:1px solid #f0f0f0;position:relative;background:#fff;z-index:1;}.day-row.open-drop{z-index:50;}
 .day-row:last-child{border-bottom:none;border-radius:0 0 16px 16px;}
 .day-row.past{background:#fafafa;}
 .day-col-left{grid-column:1;display:flex;align-items:flex-start;padding-top:2px;}
@@ -277,11 +277,11 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 .strava-stat.pending{color:#ccc;font-weight:400;}
 
 /* add button */
-.add-btn{background:none;border:1px solid #e0e0e0;border-radius:99px;width:26px;height:26px;font-size:14px;line-height:1;cursor:pointer;color:#ccc;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;}
+.add-btn{background:#fff;border:1px solid #e0e0e0;border-radius:99px;width:26px;height:26px;font-size:14px;line-height:1;cursor:pointer;color:#ccc;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;position:relative;z-index:2;}
 .add-btn:hover{border-color:#087E8B;color:#087E8B;}
 
 /* dropdown */
-.add-dropdown{position:absolute;right:0;top:28px;background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:6px;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,0.08);min-width:200px;}
+.add-dropdown{position:fixed;background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:6px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.15);min-width:200px;}
 .drop-section{font-size:10px;color:#bbb;text-transform:uppercase;letter-spacing:0.06em;padding:4px 6px 2px;font-weight:700;}
 .drop-pills{display:flex;flex-wrap:wrap;gap:4px;padding:0 4px 6px;}
 .drop-pill{padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all 0.12s;}
@@ -314,7 +314,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 /* km stats now defined in week-card section above */
 
 /* strength tab */
-.strength-page{padding:20px 32px;display:none;border-top:none;}
+.strength-page{padding:20px 32px 40px;display:none;border-top:none;box-sizing:border-box;width:100%;}
 .phases-page{padding:20px 32px 40px;display:none;}
 .phase-card{background:#fff;border-radius:16px;padding:20px 20px;margin-bottom:18px;}
 .phase-card.current-phase{box-shadow:0 0 0 3px #1a1a1a;}
@@ -323,7 +323,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 .phase-card-weeks{font-size:12px;color:#ccc;font-weight:500;margin-bottom:12px;}
 .phase-card-note{font-size:15px;color:#555;line-height:1.65;}
 .phase-card-note strong{color:#111;font-weight:700;}
-.str-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:100%;box-sizing:border-box;}
+.str-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:100%;box-sizing:border-box;margin:0;padding:0;}
 @container(max-width:900px){.str-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:960px){.str-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:500px){.str-grid{grid-template-columns:1fr;}}
@@ -1497,10 +1497,10 @@ function renderPhase(){
         // Strength duration
         const strengthMins = s.strengthMins || '';
         const isStrDay = ['sa','sb','sl','strength'].includes(day.tag)||((s.added||[]).some(t=>['sa','sb','sl','strength'].includes(t)));
-        const strHtml = isStrDay && strengthMins ? `<span class="strava-stat">${strengthMins}min</span>` : '';
+        const strHtml = isStrDay && strengthMins ? `<span class="strava-stat">${strengthMins} min</span>` : '';
 
         const kmColHtml = showKm
-          ? `<div class="km-col">${isMissedRun ? '<span class="missed-label">MISSED</span>' : ''}${kmActual ? `<span class="strava-stat">${kmActual}km</span>` : '<span class="strava-stat pending">—</span>'}</div>`
+          ? `<div class="km-col">${isMissedRun ? '<span class="missed-label">MISSED</span>' : ''}${kmActual ? `<span class="strava-stat">${kmActual} km</span>` : '<span class="strava-stat pending">—</span>'}</div>`
           : strHtml ? `<div class="km-col">${strHtml}</div>` : `<div class="km-col"></div>`;
 
         // text display: always render as span; editing handled by DOM swap in startTextEdit
@@ -1513,7 +1513,7 @@ function renderPhase(){
 
         const isDone = !!s.done;
         const kmDisplay = showKm
-          ? (isMissedRun ? `<span class="missed-label">MISSED</span>` : (kmActual ? `<span class="strava-stat">${(()=>{ const n=parseFloat(kmActual); if(isNaN(n)) return kmActual; if(n%1===0) return n; const s=n.toFixed(2); return parseFloat(s).toString(); })()}km</span>` : `<span class="strava-stat pending">—</span>`))
+          ? (isMissedRun ? `<span class="missed-label">MISSED</span>` : (kmActual ? `<span class="strava-stat">${(()=>{ const n=parseFloat(kmActual); if(isNaN(n)) return kmActual; if(n%1===0) return n; const s=n.toFixed(2); return parseFloat(s).toString(); })()} km</span>` : `<span class="strava-stat pending">—</span>`))
           : strHtml || '';
 
         fullHtml += `<div class="day-row${isPast?' past':''}${isMissedRun?' missed-run':''}${isDone?' done':''}" id="dr-${w.n}-${di}"
@@ -1560,7 +1560,8 @@ function renderPhase(){
 
 function buildDropdown(wn, di, s){
   const added = s.added || [];
-  let h = `<div class="add-dropdown" id="drop-${wn}-${di}" onclick="event.stopPropagation()">`;
+  const pos = openDropdownRect ? `top:${openDropdownRect.top}px;right:${openDropdownRect.right}px;` : '';
+  let h = `<div class="add-dropdown" id="drop-${wn}-${di}" style="${pos}" onclick="event.stopPropagation()">`;
   EXTRA_OPTIONS.forEach(section => {
     h += `<div class="drop-section">${section.section}</div><div class="drop-pills">`;
     section.items.forEach(item => {
@@ -1707,9 +1708,17 @@ function togglePlannedTag(wn, di){
 function toggleDropdown(evt,wn,di){
   evt.stopPropagation();
   const key=`${wn}-${di}`;
-  openDropdown = openDropdown===key ? null : key;
+  if(openDropdown===key){ openDropdown=null; openDropdownRect=null; }
+  else {
+    openDropdown=key;
+    // Store button position for fixed dropdown placement
+    const btn = evt.currentTarget;
+    const r = btn.getBoundingClientRect();
+    openDropdownRect = {top: r.bottom + 4, right: window.innerWidth - r.right};
+  }
   renderPhase();
 }
+let openDropdownRect = null;
 
 function toggleAdded(wn,di,id){
   const k=dk(wn,di); if(!state[k]) state[k]={};
@@ -2045,19 +2054,21 @@ So is your moment.`,
   `You built this.
 Km by km, day by day.
 Now trust it.`,
-  `Less than 4 weeks to go.
-Your body knows what to do.`,
-  `You have been training for this
-longer than some relationships last.`,
+  `Your body has been preparing for this.
+Your body would also like a croissant.
+Negotiate.`,
+  `Running is cheaper than therapy.
+Also more painful.
+About the same amount of crying.`,
   `The last few kms of the marathon
 will be the hardest.
 You have run through hard before.`,
-  `Taper madness is just
-your body
-asking for more.`,
-  `Almost there.
-Not yet.
-Soon.`,
+  `Your legs are fresh.
+Your mind is feral.
+This is fine.`,
+  `At some point during the marathon
+you will question all your life choices.
+This is normal. Keep running.`,
   `The best view comes
 after the hardest climb.
 The best finish
@@ -2067,12 +2078,13 @@ You just don't know it yet.`,
   `October 10th
 is not just a race.
 It's a celebration of everything you did.`,
-  `One week out.
-You have done the work.
-Now trust it.`,
-  `Race week nerves
-are just excitement
-wearing a disguise.`,
+  `You could have taken up knitting.
+You chose 42.2 km.
+Something is wrong with you.
+It's great.`,
+  `Somewhere a couch is very comfortable right now.
+You are not on it.
+Legendary behaviour.`,
   `You are going to cross that finish line
 and it is going to be
 the best feeling of your life.`,
@@ -2085,23 +2097,24 @@ Today's run is why.`,
   `Save the legs.
 Sharpen the mind.
 The race is coming.`,
-  `22 weeks of work.
-42.2 km to run.
-1 finish line to cross.`,
-  `This is the last week
-before race week.
-Feel proud of that.`,
+  `42.2 km is just
+422 lots of 100m.
+Nobody asked but here we are.`,
+  `The hardest runs are the ones you show up for
+when you absolutely did not want to.
+That includes today, probably. Go.`,
   `Almost there.
 You have done every bit of the work.
 Believe it.`,
-  `Two days to Lisbon.
-You are ready.
-You have always been ready.`,
-  `Tomorrow you run
-the Lisbon Marathon.
-Sleep well. Dream big.`,
-  `You trained 147 days for this.
-Cascais. Sunrise. Go.`,
+  `If running were easy
+it would be called football.
+You chose the hard one.`,
+  `Your muscles are 60% water.
+Your determination is 100% unhinged.
+Perfect combination.`,
+  `You have run in conditions
+that would make a sensible person
+stay in bed. You are not sensible. Excellent.`,
   `Still going.
 Still showing up.
 Still a runner.`,
@@ -2114,9 +2127,9 @@ The belief is growing.`,
   `You are mid-training
 and that is exactly
 where you need to be.`,
-  `Halfway there.
-Half the work done.
-All the grit intact.`,
+  `You are the kind of person
+who signs up for marathons for fun.
+Medical advice: keep going.`,
   `You wake up and run.
 That is not nothing.
 That is everything.`,
