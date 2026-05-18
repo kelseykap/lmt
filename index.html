@@ -49,13 +49,20 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   pointer-events:none;
 }
 #home-header{
-  padding:36px 0 0;
-  display:flex;justify-content:center;
+  padding:calc(36px + 48px) 0 0;
+  /* space reserved for fixed global logo */
 }
-#home-logo{
+/* global logo — sits above both screens */
+#global-logo{
+  position:fixed;
+  top:calc(36px + env(safe-area-inset-top, 0px));
+  left:50%;
+  transform:translateX(-50%);
   height:48px;
   width:200px;
   background:url('logo-home.png') center center / contain no-repeat;
+  z-index:200;
+  pointer-events:none;
 }
 #home-quote-wrap{
   flex:1;
@@ -103,26 +110,21 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   display:flex;flex-direction:column;
   transform:translateY(100vh);
   transition:transform 0.42s cubic-bezier(.4,0,.2,1);
-  background:#423d3d;
+  background:url('lmt-background.png') center center / cover no-repeat, #E8501A;
   padding-top:env(safe-area-inset-top,0);
   overflow:hidden;
 }
 #content-panel.open{transform:translateY(0);}
-#content-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#423d3d;}
+#content-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:transparent;}
 
 /* ── TAB BAR (PLAN / STRENGTH headings) ── */
 #tab-bar{
   display:flex;flex-direction:column;
-  background:#423d3d;
-  padding:20px 20px 0;
+  background:transparent;
+  padding:calc(36px + 48px + 12px) 20px 0;
   flex-shrink:0;
 }
-#content-logo{
-  height:48px;
-  width:200px;
-  background:url('logo-home.png') center center / contain no-repeat;
-  margin:0 auto 18px;
-}
+#content-logo{ display:none; }
 .top-tab{
   display:block;width:100%;
   padding:0;margin:0;
@@ -157,7 +159,7 @@ body{padding-bottom:0;}
 @media(hover:none){.add-btn{width:32px;height:32px;}}
 
 /* ── CONTENT AREA ── */
-.content{padding:16px 16px 40px;max-width:960px;}
+.content{padding:16px 32px 40px;max-width:960px;}
 .phase-section{margin-bottom:32px;}
 
 /* phase note toggle — uses phase label as heading */
@@ -179,15 +181,15 @@ body{padding-bottom:0;}
 .btn-discard{font-size:12px;color:rgba(255,255,255,0.4);background:none;border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:4px 12px;cursor:pointer;font-family:inherit;}
 
 /* ── WEEK CARDS ── */
-.week{background:#fff;border-radius:16px;margin-bottom:12px;overflow:visible;}
-.week.current-week{box-shadow:0 0 0 2px #fb5624;}
+.week{background:#fff;border-radius:16px;margin-bottom:18px;overflow:visible;}
+.week.current-week{box-shadow:0 0 0 2px #93c47e;}
 .week-hdr{padding:18px 18px 14px;display:flex;flex-direction:column;cursor:pointer;user-select:none;border-radius:16px;}
 .week-hdr:hover{background:#fafafa;}
 .week-hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .week-title{font-size:17px;font-weight:800;color:#111;letter-spacing:-0.3px;}
 .week-date{font-size:15px;color:#bbb;font-weight:400;margin-left:6px;}
 .week-phase-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#bbb;}
-.current-label{font-size:10px;font-weight:700;background:#E8501A;color:#fff;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle;}
+.current-label{display:none;}
 /* run icons — rounded rects spanning full card width */
 .week-run-icons{display:flex;gap:5px;margin-bottom:10px;width:100%;}
 .run-icon{flex:1;height:6px;border-radius:3px;border:1.5px solid #e98260;background:transparent;transition:background 0.15s;}
@@ -206,7 +208,15 @@ body{padding-bottom:0;}
 .week-body.open{display:block;}
 
 /* day row */
-.day-row{display:grid;grid-template-columns:28px 46px 1fr auto;grid-template-rows:auto auto;gap:4px 8px;padding:13px 18px;border-bottom:1px solid #f0f0f0;position:relative;align-items:start;background:#fff;}.day-row:last-child{border-bottom:none;border-radius:0 0 16px 16px;}.day-row.past{background:#fafafa;}.day-check{grid-column:1;grid-row:1/3;align-self:center;width:20px;height:20px;cursor:pointer;accent-color:#E8501A;flex-shrink:0;}.day-row.done .day-main{opacity:0.35;}.day-row.done .tags-area{opacity:0.4;}
+.day-row{display:grid;grid-template-columns:24px 44px 1fr auto 36px;gap:0 10px;padding:12px 16px;border-bottom:1px solid #f0f0f0;position:relative;align-items:center;background:#fff;}
+.day-row:last-child{border-bottom:none;border-radius:0 0 16px 16px;}
+.day-row.past{background:#fafafa;}
+.day-check{grid-column:1;grid-row:1;align-self:center;width:18px;height:18px;cursor:pointer;accent-color:#93c47e;flex-shrink:0;}
+.day-row.done .day-main{opacity:0.35;}
+.day-row.done .tags-area{opacity:0.4;}
+.day-col-middle{grid-column:3;display:flex;flex-direction:column;gap:4px;min-width:0;}
+.day-col-km{grid-column:4;display:flex;align-items:center;justify-content:flex-end;}
+.day-col-add{grid-column:5;display:flex;align-items:center;justify-content:flex-end;position:relative;}
 .day-row:last-child{border-bottom:none;}
 .day-row.past{background:#fafafa;}
 .day-label{font-size:15px;color:#bbb;font-weight:600;}
@@ -291,14 +301,22 @@ body{padding-bottom:0;}
 /* km stats now defined in week-card section above */
 
 /* strength tab */
-.strength-page{padding:20px 28px;display:none;border-top:none;}
+.strength-page{padding:20px 32px;display:none;border-top:none;}
 .str-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:100%;box-sizing:border-box;}
 @container(max-width:900px){.str-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:960px){.str-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:500px){.str-grid{grid-template-columns:1fr;}}
-.str-card{background:#fff;border:1px solid #e8e8e8;border-top:none;border-radius:8px;padding:14px 16px;min-height:200px;display:flex;flex-direction:column;}
+.str-card{background:#fff;border:1px solid #e8e8e8;border-top:none;border-radius:8px;padding:14px 16px;min-height:120px;display:flex;flex-direction:column;}
 .str-card.drag-over{border-color:#087E8B;background:#f0fafb;}
-.str-card h2{font-size:13px;font-weight:700;margin-bottom:12px;color:#3C3C3C;letter-spacing:0.01em;}
+.str-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.str-title{font-size:13px;font-weight:700;color:#3C3C3C;letter-spacing:0.01em;cursor:pointer;border-bottom:1px dashed transparent;flex:1;margin:0;}
+.str-title:hover{border-bottom-color:#ccc;}
+.str-title-input{font-size:13px;font-weight:700;color:#3C3C3C;border:none;border-bottom:1px solid #aaa;outline:none;font-family:inherit;flex:1;background:transparent;}
+.str-block-del{background:none;border:none;cursor:pointer;color:#ddd;font-size:18px;line-height:1;padding:0 0 0 8px;flex-shrink:0;}
+.str-block-del:hover{color:#E8501A;}
+.str-add-block-wrap{padding:8px 0 16px;}
+.str-add-block-btn{width:100%;padding:12px;background:none;border:2px dashed #e8e8e8;border-radius:8px;font-family:Helvetica,Arial,sans-serif;font-size:14px;font-weight:600;color:#bbb;cursor:pointer;}
+.str-add-block-btn:hover{border-color:#3C3C3C;color:#3C3C3C;}
 .str-items{flex:1;}
 .str-item{display:flex;align-items:flex-start;gap:6px;margin-bottom:7px;cursor:grab;user-select:none;padding:3px 4px;border-radius:4px;transition:background 0.1s;}
 .str-item:active{cursor:grabbing;}
@@ -330,6 +348,9 @@ body{padding-bottom:0;}
 </style>
 </head>
 <body>
+
+<!-- Global logo — always on top -->
+<div id="global-logo"></div>
 
 <!-- ── HOME SCREEN ────────────────────────────────── -->
 <div id="home-screen">
@@ -789,6 +810,7 @@ if(!state.strA) state.strA = [...DEFAULT_STR.A];
 if(!state.strAcore) state.strAcore = [...DEFAULT_STR.Acore];
 if(!state.strB) state.strB = [...DEFAULT_STR.B];
 if(!state.strPC) state.strPC = [...DEFAULT_STR.PC];
+// strSections initialised lazily in getStrSections()
 
 let openWeeks = {};
 let activePhase = 0;
@@ -844,18 +866,35 @@ function initContentScroll(){
 }
 
 // ── STRENGTH PAGE ────────────────────────────────────────────────────────────
-function renderStrength(){
-  const sections = [
+function getStrSections(){
+  // Custom sections stored in state, fallback to defaults
+  if(state.strSections) return state.strSections;
+  return [
     {key:'strA', title:'Strength A'},
     {key:'strB', title:'Strength B'},
     {key:'strAcore', title:'Core'},
     {key:'strPC', title:'Posterior Chain'},
   ];
+}
+
+function renderStrength(){
+  const sections = getStrSections();
   let html = '';
   sections.forEach(sec => {
     const items = state[sec.key] || [];
+    const titleEditing = state[`strTitle_editing_${sec.key}`];
+    const titleHtml = titleEditing
+      ? `<input class="str-title-input" id="str-title-inp-${sec.key}" type="text" value="${escA(sec.title)}"
+           onblur="finishStrTitle('${sec.key}')"
+           onkeydown="if(event.key==='Enter'||event.key==='Escape') finishStrTitle('${sec.key}')"
+           onclick="event.stopPropagation()">`
+      : `<h2 class="str-title" onclick="startStrTitle('${sec.key}')" title="Tap to rename">${esc(sec.title)}</h2>`;
+
     html += `<div class="str-card" id="card-${sec.key}" ondragover="strDragOver(event,'${sec.key}')" ondragleave="strDragLeave(event,'${sec.key}')" ondrop="strDrop(event,'${sec.key}')">
-      <h2>${sec.title}</h2>
+      <div class="str-card-header">
+        ${titleHtml}
+        <button class="str-block-del" onclick="delStrBlock('${sec.key}')" title="Delete block">×</button>
+      </div>
       <div class="str-items">`;
     items.forEach((ex, i) => {
       html += `<div class="str-item" id="si-${sec.key}-${i}" draggable="true"
@@ -878,7 +917,57 @@ function renderStrength(){
       </div>
     </div>`;
   });
+
+  // Add block button at the bottom
+  html += `<div class="str-add-block-wrap">
+    <button class="str-add-block-btn" onclick="addStrBlock()">+ Add block</button>
+  </div>`;
+
   document.getElementById('strGrid').innerHTML = html;
+
+  // Focus any open title input
+  sections.forEach(sec => {
+    if(state[`strTitle_editing_${sec.key}`]){
+      const inp = document.getElementById(`str-title-inp-${sec.key}`);
+      if(inp){ inp.focus(); inp.select(); }
+    }
+  });
+}
+
+function startStrTitle(key){
+  state[`strTitle_editing_${key}`] = true;
+  renderStrength();
+}
+
+function finishStrTitle(key){
+  const inp = document.getElementById(`str-title-inp-${key}`);
+  if(!inp) return;
+  const val = inp.value.trim() || 'Block';
+  const sections = getStrSections();
+  const sec = sections.find(s=>s.key===key);
+  if(sec) sec.title = val;
+  state.strSections = sections;
+  delete state[`strTitle_editing_${key}`];
+  save();
+  renderStrength();
+}
+
+function addStrBlock(){
+  const sections = getStrSections();
+  const key = `strCustom_${Date.now()}`;
+  sections.push({key, title:'New Block'});
+  state.strSections = sections;
+  state[key] = [];
+  save();
+  renderStrength();
+}
+
+function delStrBlock(key){
+  const sections = getStrSections().filter(s=>s.key!==key);
+  state.strSections = sections;
+  delete state[key];
+  save();
+  renderStrength();
 }
 
 // ── STRENGTH DRAG & DROP ──────────────────────────────────────────────────────
@@ -1344,23 +1433,27 @@ function renderPhase(){
         }
 
         const isDone = !!s.done;
+        const kmDisplay = showKm
+          ? (isMissedRun ? `<span class="missed-label">MISSED</span>` : (kmActual ? `<span class="strava-stat">${kmActual}km</span>` : `<span class="strava-stat pending">—</span>`))
+          : strHtml || '';
+
         fullHtml += `<div class="day-row${isPast?' past':''}${isMissedRun?' missed-run':''}${isDone?' done':''}" id="dr-${w.n}-${di}"
           ondragover="dayDragOver(event,${w.n},${di})"
           ondragleave="dayDragLeave(event,${w.n},${di})"
           ondrop="dayDrop(event,${w.n},${di})">
           <input type="checkbox" class="day-check" ${isDone?'checked':''} onchange="toggleDone(${w.n},${di},this)" onclick="event.stopPropagation()">
-          <div class="day-label" style="grid-row:1;padding-top:2px;">${day.d}</div>
-          <div class="tags-area" id="tags-${w.n}-${di}" style="grid-column:3;grid-row:1;">
-            ${plannedTagHtml(day.tag, w.n, di, plannedHidden)}
-            ${addedTagsHtml(s, w.n, di)}
+          <div class="day-label">${day.d}</div>
+          <div class="day-col-middle">
+            <div class="tags-area" id="tags-${w.n}-${di}">
+              ${plannedTagHtml(day.tag, w.n, di, plannedHidden)}
+              ${addedTagsHtml(s, w.n, di)}
+            </div>
+            <div class="day-main">${textDisplay}</div>
           </div>
-          <div class="day-top-right" style="grid-column:4;grid-row:1;position:relative;display:flex;align-items:flex-start;gap:6px;justify-content:flex-end;">
-            ${showKm ? `<div class="km-col">${isMissedRun ? '<span class="missed-label">MISSED</span>' : ''}${kmActual ? `<span class="strava-stat">${kmActual}km</span>` : '<span class="strava-stat pending">—</span>'}</div>` : strHtml ? `<div class="km-col">${strHtml}</div>` : ''}
+          <div class="day-col-km">${kmDisplay}</div>
+          <div class="day-col-add">
             <button class="add-btn" onclick="toggleDropdown(event,${w.n},${di})" title="Add activity">+</button>
             ${dropOpen ? buildDropdown(w.n, di, s) : ''}
-          </div>
-          <div class="day-main" style="grid-column:2/5;grid-row:2;">
-            ${textDisplay}
           </div>
         </div>`;
       });
@@ -1507,12 +1600,12 @@ function refreshKmCol(wn, di){
   row.classList.toggle('missed-run', isMissed);
 
   // Update the top-right cell (grid-column:3, grid-row:1) which has km+add-btn
-  const topRight = row.querySelector('.day-top-right');
+  const topRight = row.querySelector('.day-col-km');
   if(!topRight) return;
   const dropOpen = openDropdown === `${wn}-${di}`;
   const missedHtml = isMissed ? `<span class="missed-label">MISSED</span>` : '';
   const kmHtml = showKm ? `<div class="km-col">${missedHtml}<input class="km-actual-input" id="km-${wn}-${di}" type="text" inputmode="decimal" placeholder="km" value="${escA(String(kmActual))}" onchange="saveKm(${wn},${di},this.value)" onclick="event.stopPropagation()"></div>` : '';
-  topRight.innerHTML = `${kmHtml}<button class="add-btn" onclick="toggleDropdown(event,${wn},${di})" title="Add activity">+</button>${dropOpen ? buildDropdown(wn,di,s) : ''}`;
+  topRight.innerHTML = kmHtml;
 }
 
 function togglePlannedTag(wn, di){
@@ -1525,7 +1618,7 @@ function togglePlannedTag(wn, di){
     const s=state[k];
     tagsEl.innerHTML=plannedTagHtml(day.tag,wn,di,s.plannedHidden)+addedTagsHtml(s,wn,di);
   }
-  // refreshKmCol handles add-btn restore
+  // add-btn is in day-col-add, not affected by tag updates
   refreshKmCol(wn,di);
 }
 
@@ -1554,7 +1647,7 @@ function toggleAdded(wn,di,id){
   const drop=document.getElementById(`drop-${wn}-${di}`);
   if(drop) drop.remove();
   // restore add-btn if it got clobbered
-  // refreshKmCol handles add-btn restore
+  // add-btn is in day-col-add, not affected by tag updates
   refreshKmCol(wn,di);
   updateProgress(wn);
 }
@@ -1570,7 +1663,7 @@ function removeAdded(evt,wn,di,id){
     const s=state[k];
     tagsEl.innerHTML=plannedTagHtml(day.tag,wn,di,!!s.plannedHidden)+addedTagsHtml(s,wn,di);
   }
-  // refreshKmCol handles add-btn restore
+  // add-btn is in day-col-add, not affected by tag updates
   refreshKmCol(wn,di);
   updateProgress(wn);
 }
@@ -1988,9 +2081,7 @@ function renderDailyQuote(){
   const dayOfYear = Math.floor((today - new Date(today.getFullYear(),0,0)) / 86400000);
   const q = days === 0 ? RACE_DAY_QUOTE : QUOTES[dayOfYear % QUOTES.length];
 
-  // Logo
-  const homeHdr = document.getElementById('home-header');
-  if(homeHdr) homeHdr.innerHTML = `<div id="home-logo"></div>`;
+  // Logo is a fixed global element — no JS needed
 
   // Quote
   const homeQ = document.getElementById('home-quote');
