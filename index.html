@@ -20,7 +20,7 @@
 @font-face{font-family:'Aileron';src:url('Aileron-Regular.otf') format('opentype');font-weight:400;}
 @font-face{font-family:'Aileron';src:url('Aileron-Bold.otf') format('opentype');font-weight:700;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;font-size:17px;}
+body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png') center center / cover no-repeat fixed, #E8501A;color:#3C3C3C;font-size:17px;}
 
 /* ── PALETTE ──
   teal   #087E8B
@@ -37,7 +37,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
 /* ── HOME SCREEN ── */
 #home-screen{
   position:fixed;inset:0;z-index:10;
-  background:#E8501A url('lmt-background.png') center center / cover no-repeat;
+  background:transparent;
   display:flex;flex-direction:column;
   align-items:center;
   padding:env(safe-area-inset-top,0) 0 0;
@@ -110,7 +110,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   display:flex;flex-direction:column;
   transform:translateY(100vh);
   transition:transform 0.42s cubic-bezier(.4,0,.2,1);
-  background:url('lmt-background.png') center center / cover no-repeat, #E8501A;
+  background:transparent;
   padding-top:env(safe-area-inset-top,0);
   overflow:hidden;
 }
@@ -155,7 +155,6 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
 /* keep old header harmless */
 .sticky-top{display:none;}.header{display:none;}
 .hdr-body,.hdr-logo,.hdr-quote-text,.hdr-countdown,.hdr-km-total{display:none;}
-body{padding-bottom:0;}
 @media(hover:none){.add-btn{width:26px;height:26px;}}
 
 /* ── CONTENT AREA ── */
@@ -190,8 +189,6 @@ body{padding-bottom:0;}
 .week-date{font-size:15px;color:#bbb;font-weight:400;margin-left:6px;}
 .week-phase-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#bbb;}
 .current-label{display:none;}
-/* run icons — rounded rects spanning full card width */
-.week-run-icons{display:flex;gap:5px;margin-bottom:10px;width:100%;}
 .run-icon{flex:1;height:6px;border-radius:3px;border:1.5px solid #e98260;background:transparent;transition:background 0.15s;}
 .run-icon.filled{background:#e98260;border-color:#e98260;}
 .run-icon:not(.filled){border-width:1px;border-color:rgba(233,130,96,0.35);}
@@ -202,8 +199,6 @@ body{padding-bottom:0;}
 .km-badge-wrap{display:flex;align-items:baseline;gap:0;}
 .km-actual-badge{font-size:15px;font-weight:700;color:#111;}
 .km-planned-line{font-size:15px;color:#bbb;font-weight:400;}
-.chevron{display:none;}
-.km-badge{display:none;}
 .week-body{display:none;border-top:1px solid #f0f0f0;border-radius:0 0 8px 8px;overflow:visible;}
 .week-body.open{display:block;}
 
@@ -290,13 +285,9 @@ body{padding-bottom:0;}
 .note-panel textarea:focus{border-color:#087E8B;}
 .note-panel textarea::placeholder{color:#ccc;}
 .note-actions{display:flex;gap:8px;margin-top:5px;align-items:center;}
-.btn-save{font-size:11px;color:#fff;background:#087E8B;border:none;border-radius:5px;padding:4px 12px;cursor:pointer;font-family:inherit;font-weight:600;}
-.btn-save:hover{background:#065f69;}
-.btn-discard{font-size:11px;color:#bbb;background:none;border:1px solid #e8e8e8;border-radius:5px;padding:3px 10px;cursor:pointer;font-family:inherit;}
 .btn-discard:hover{color:#777;border-color:#aaa;}
 .btn-delete-note{font-size:11px;color:#E8501A;background:none;border:none;cursor:pointer;font-family:inherit;margin-left:auto;}
 .btn-delete-note:hover{color:#cc2a2f;}
-.week-progress{font-size:11px;color:#ccc;margin-left:8px;}
 /* km stats now defined in week-card section above */
 
 /* strength tab */
@@ -345,12 +336,7 @@ body{padding-bottom:0;}
 .str-add-btn:hover{border-color:#087E8B;color:#087E8B;}
 
 /* strava */
-.strava-bar{display:flex;align-items:center;gap:10px;padding:7px 28px;background:#fff;border-bottom:1px solid #e8e8e8;font-size:12px;}
-.strava-btn{background:#E8501A;color:#fff;border:none;border-radius:5px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
-.strava-btn:hover{background:#e04448;}
-.strava-status{color:#bbb;font-size:12px;}
-.strava-ok{color:#087E8B;font-weight:600;}
-.strava-err{color:#E8501A;}
+
 /* splash handled by manifest background_color */
 </style>
 </head>
@@ -1356,10 +1342,6 @@ function renderPhase(){
       }).length;
       const isCurrent = w.n === currentWeek;
       const wlabel = w.travel ? `W${w.n} — Travel` : w.cutback ? `W${w.n} — Cutback` : `W${w.n}`;
-      const curBadge = isCurrent ? `<span class="current-label">Current</span>` : '';
-      const prog = totalRuns > 0 && doneRuns > 0
-        ? `<span class="week-progress" id="prog-${w.n}"><span class="done-count">${doneRuns}</span>/${totalRuns} runs</span>`
-        : `<span class="week-progress" id="prog-${w.n}"></span>`;
 
       let actualTotal = 0;
       w.days.forEach((_,i) => { const v = parseFloat((state[dk(w.n,i)]||{}).kmActual); if(!isNaN(v)) actualTotal += v; });
@@ -1646,7 +1628,6 @@ function refreshKmCol(wn, di){
   if(!topRight) return;
   const dropOpen = openDropdown === `${wn}-${di}`;
   const missedHtml = isMissed ? `<span class="missed-label">MISSED</span>` : '';
-  const kmHtml = showKm ? `<div class="km-col">${missedHtml}<input class="km-actual-input" id="km-${wn}-${di}" type="text" inputmode="decimal" placeholder="km" value="${escA(String(kmActual))}" onchange="saveKm(${wn},${di},this.value)" onclick="event.stopPropagation()"></div>` : '';
   topRight.innerHTML = kmHtml;
 }
 
@@ -1708,24 +1689,6 @@ function removeAdded(evt,wn,di,id){
   // add-btn is in day-col-add, not affected by tag updates
   refreshKmCol(wn,di);
   updateProgress(wn);
-}
-
-function saveKm(wn, di, val){
-  const k=dk(wn,di); if(!state[k]) state[k]={};
-  const v = parseFloat(val);
-  state[k].kmActual = isNaN(v)||v<=0 ? '' : v;
-  save();
-  const w=findWeek(wn); if(!w) return;
-  let actualTotal=0;
-  w.days.forEach((_,i)=>{ const v2=parseFloat((state[dk(wn,i)]||{}).kmActual); if(!isNaN(v2)) actualTotal+=v2; });
-  const hasActual=actualTotal>0;
-  const wrap=document.querySelector(`#week-${wn} .km-badge-wrap`);
-  if(wrap){
-// km badge is rebuilt by renderPhase; saveKm triggers updateProgress only
-  }
-  refreshKmCol(wn,di); // updates missed-run class
-  updateProgress(wn);
-  renderKmTotal();
 }
 
 function togglePhaseNote(pi){
@@ -2111,10 +2074,7 @@ Today you collect.
 Cascais to Praça do Comércio.
 Let's go.`;
 
-
 // ── HEADER RENDER ────────────────────────────────────────────────────────────
-// LMT logo SVG — bold retro serif, orange
-const LOGO_SVG = `<img src="logo-2.png" alt="LMT" style="height:36px;width:36px;object-fit:contain;border-radius:4px;">`;
 
 function renderDailyQuote(){
   const race = new Date('2026-10-10');
@@ -2139,7 +2099,6 @@ function renderDailyQuote(){
     }
   }
 }
-
 
 function renderKmTotal(){
   let total = 0;
@@ -2261,7 +2220,6 @@ async function stravaHandleCallback(){
   if(!tok.access_token){ renderStravaBar('error','Auth failed'); return true; }
   state.stravaTok=tok; save(); await stravaSync(); return true;
 }
-
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('click',()=>{ if(openDropdown){ openDropdown=null; renderPhase(); }});
