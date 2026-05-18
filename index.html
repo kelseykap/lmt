@@ -121,7 +121,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 #tab-bar{
   display:flex;flex-direction:column;
   background:transparent;
-  padding:calc(36px + 48px + 20px) 20px 0;
+  padding:calc(36px + 48px + 36px) 20px 0;
   flex-shrink:0;
 }
 .tab-row{display:flex;align-items:baseline;gap:12px;}
@@ -137,7 +137,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
   transition:font-weight 0.1s;
 }
 .top-tab.active{font-weight:900;}
-#tab-divider{height:3px;background:rgba(255,254,223,0.5);margin:14px -20px 0;}
+#tab-divider{height:3px;background:#fffedf;margin:14px -20px 0;}
 
 /* ── PHASE NAV ── */
 #phase-nav-row{background:#423d3d;flex-shrink:0;padding:0 20px;}
@@ -204,7 +204,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 .week-body.open{display:block;}
 
 /* day row — 3 cols: left(day+add) | middle(pills+notes) | right(check+km) */
-.day-row{display:grid;grid-template-columns:52px 1fr 44px;gap:0 10px;padding:12px 16px;border-bottom:1px solid #f0f0f0;position:relative;background:#fff;}
+.day-row{display:grid;grid-template-columns:52px 1fr 44px;gap:0 2px;padding:12px 16px;border-bottom:1px solid #f0f0f0;position:relative;background:#fff;}
 .day-row:last-child{border-bottom:none;border-radius:0 0 16px 16px;}
 .day-row.past{background:#fafafa;}
 .day-col-left{grid-column:1;display:flex;align-items:flex-start;padding-top:2px;}
@@ -388,11 +388,9 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 <div id="content-panel">
   <!-- tab bar with logo + headings -->
   <div id="tab-bar">
-    <div class="tab-row">
-      <button class="top-tab active" id="tab-btn-plan" onclick="showTab('plan')">Plan</button>
-      <button class="top-tab" id="tab-btn-phases" onclick="showTab('phases')">Phases</button>
-    </div>
+    <button class="top-tab active" id="tab-btn-plan" onclick="showTab('plan')">Plan</button>
     <button class="top-tab" id="tab-btn-strength" onclick="showTab('strength')">Strength</button>
+    <button class="top-tab" id="tab-btn-phases" onclick="showTab('phases')">Phases</button>
   </div>
   <div id="tab-divider"></div>
   <!-- scrollable content -->
