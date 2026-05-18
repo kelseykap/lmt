@@ -62,7 +62,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   width:200px;
   background:url('logo-home.png') center center / contain no-repeat;
   z-index:200;
-  pointer-events:none;
+  cursor:pointer;
 }
 #home-quote-wrap{
   flex:1;
@@ -137,7 +137,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   transition:font-weight 0.1s;
 }
 .top-tab.active{font-weight:900;}
-#tab-divider{height:1px;background:rgba(255,254,223,0.15);margin:16px 20px 0;}
+#tab-divider{height:2px;background:rgba(255,254,223,0.4);margin:14px 20px 0;}
 
 /* ── PHASE NAV ── */
 #phase-nav-row{background:#423d3d;flex-shrink:0;padding:0 20px;}
@@ -182,7 +182,7 @@ body{padding-bottom:0;}
 
 /* ── WEEK CARDS ── */
 .week{background:#fff;border-radius:16px;margin-bottom:18px;overflow:visible;}
-.week.current-week{box-shadow:0 0 0 2px #93c47e;}
+.week.current-week{box-shadow:0 0 0 3px #93c47e;}
 .week-hdr{padding:18px 18px 14px;display:flex;flex-direction:column;cursor:pointer;user-select:none;border-radius:16px;}
 .week-hdr:hover{background:#fafafa;}
 .week-hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
@@ -309,9 +309,9 @@ body{padding-bottom:0;}
 .str-card{background:#fff;border:1px solid #e8e8e8;border-top:none;border-radius:8px;padding:14px 16px;min-height:120px;display:flex;flex-direction:column;}
 .str-card.drag-over{border-color:#087E8B;background:#f0fafb;}
 .str-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.str-title{font-size:13px;font-weight:700;color:#3C3C3C;letter-spacing:0.01em;cursor:pointer;border-bottom:1px dashed transparent;flex:1;margin:0;}
+.str-title{font-size:17px;font-weight:800;color:#3C3C3C;letter-spacing:-0.3px;cursor:pointer;border-bottom:1px dashed transparent;flex:1;margin:0;}
 .str-title:hover{border-bottom-color:#ccc;}
-.str-title-input{font-size:13px;font-weight:700;color:#3C3C3C;border:none;border-bottom:1px solid #aaa;outline:none;font-family:inherit;flex:1;background:transparent;}
+.str-title-input{font-size:17px;font-weight:800;color:#3C3C3C;letter-spacing:-0.3px;border:none;border-bottom:1px solid #aaa;outline:none;font-family:inherit;flex:1;background:transparent;}
 .str-block-del{background:none;border:none;cursor:pointer;color:#ddd;font-size:18px;line-height:1;padding:0 0 0 8px;flex-shrink:0;}
 .str-block-del:hover{color:#E8501A;}
 .str-add-block-wrap{padding:8px 0 16px;}
@@ -350,7 +350,7 @@ body{padding-bottom:0;}
 <body>
 
 <!-- Global logo — always on top -->
-<div id="global-logo"></div>
+<div id="global-logo" onclick="closeContentPanel()"></div>
 
 <!-- ── HOME SCREEN ────────────────────────────────── -->
 <div id="home-screen">
@@ -1345,7 +1345,7 @@ function renderPhase(){
         const isRun = RUN_TAGS_KM.includes(d.tag) || (s2.added||[]).some(id=>RUN_TAGS_KM.includes(id));
         if(isRun){ const v = parseFloat(s2.kmActual); if(!isNaN(v)) actualRunKm += v; }
       });
-      const fmt = v => v%1===0?v:v.toFixed(1);
+      const fmt = v => { if(v%1===0) return v; const s=v.toFixed(2); return parseFloat(s).toString(); };
 
       let badgeHtml;
       if(w.km === 'Race'){
