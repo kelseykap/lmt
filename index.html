@@ -118,10 +118,10 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
   flex-shrink:0;
 }
 #content-logo{
-  height:28px;
-  width:100%;
+  height:48px;
+  width:200px;
   background:url('logo-home.png') center center / contain no-repeat;
-  margin-bottom:18px;
+  margin:0 auto 18px;
 }
 .top-tab{
   display:block;width:100%;
@@ -144,7 +144,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:#F5F5F5;color:#3C3C3C;fon
 .phase-btn.active{color:#fff;border-bottom-color:#E8501A;}
 
 /* strava */
-.strava-bar{display:flex;align-items:center;gap:10px;padding:8px 20px;background:#423d3d;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px;flex-shrink:0;}
+.strava-bar{display:flex;align-items:center;gap:10px;padding:10px 20px;background:#2e2a2a;border-top:1px solid rgba(255,255,255,0.1);font-size:13px;flex-shrink:0;padding-bottom:max(10px,env(safe-area-inset-bottom,10px));}
 .strava-btn{background:#E8501A;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
 .strava-status{color:rgba(255,255,255,0.4);font-size:13px;}
 .strava-ok{color:#E8501A;font-weight:600;}
@@ -180,7 +180,7 @@ body{padding-bottom:0;}
 
 /* ── WEEK CARDS ── */
 .week{background:#fff;border-radius:16px;margin-bottom:12px;overflow:visible;}
-.week.current-week{box-shadow:0 0 0 2px #E8501A;}
+.week.current-week{box-shadow:0 0 0 2px #fb5624;}
 .week-hdr{padding:18px 18px 14px;display:flex;flex-direction:column;cursor:pointer;user-select:none;border-radius:16px;}
 .week-hdr:hover{background:#fafafa;}
 .week-hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
@@ -195,8 +195,8 @@ body{padding-bottom:0;}
 .run-icon:not(.filled){border-width:1px;border-color:rgba(233,130,96,0.35);}
 /* stats row */
 .week-stats-row{display:flex;justify-content:space-between;align-items:center;}
-.week-runs-stat{font-size:15px;color:#111;font-weight:400;}
-.week-runs-stat .done-count{font-weight:700;color:#111;}
+.week-runs-stat{font-size:15px;color:#bbb;font-weight:400;}
+.week-runs-stat .done-count{font-weight:700;color:#111;font-size:15px;}
 .km-badge-wrap{display:flex;align-items:baseline;gap:0;}
 .km-actual-badge{font-size:15px;font-weight:700;color:#111;}
 .km-planned-line{font-size:15px;color:#bbb;font-weight:400;}
@@ -246,9 +246,8 @@ body{padding-bottom:0;}
 
 /* km input */
 .km-col{display:flex;align-items:center;justify-content:flex-end;}
-.km-actual-input{width:50px;font-size:15px;border:none;border-bottom:1px solid #e0e0e0;background:transparent;outline:none;font-family:inherit;color:#3C3C3C;padding:1px 2px;text-align:right;}
-.km-actual-input:focus{border-bottom-color:#087E8B;}
-.km-actual-input::placeholder{color:#ddd;}
+.strava-stat{font-size:13px;font-weight:600;color:#3C3C3C;white-space:nowrap;}
+.strava-stat.pending{color:#ccc;font-weight:400;}
 
 /* add button */
 .add-btn{background:none;border:1px solid #e0e0e0;border-radius:99px;width:32px;height:32px;font-size:18px;line-height:1;cursor:pointer;color:#ccc;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;}
@@ -356,8 +355,6 @@ body{padding-bottom:0;}
     <button class="top-tab" id="tab-btn-strength" onclick="showTab('strength')">Strength</button>
   </div>
   <div id="tab-divider"></div>
-  <!-- strava -->
-  <div id="strava-bar" class="strava-bar" style="display:none;"></div>
   <!-- scrollable content -->
   <span id="sync-status" style="display:none;"></span>
   <div id="content-scroll">
@@ -368,6 +365,8 @@ body{padding-bottom:0;}
       <div class="str-grid" id="strGrid"></div>
     </div>
   </div>
+  <!-- strava bar pinned to bottom -->
+  <div id="strava-bar" class="strava-bar" style="display:none;"></div>
 </div>
 
 <script>
@@ -1297,7 +1296,7 @@ function renderPhase(){
           </div>
           <div class="week-run-icons" id="icons-${w.n}">${runIcons}</div>
           <div class="week-stats-row">
-            <span class="week-runs-stat" id="prog-${w.n}">${totalRuns>0?`<span class="done-count">${doneRuns}</span>/${totalRuns} runs`:''}</span>
+            <span class="week-runs-stat" id="prog-${w.n}">${totalRuns>0?`<span class="done-count">${doneRuns}</span><span style="color:#bbb;font-weight:400;">/${totalRuns} runs</span>`:''}</span>
             ${w.km==='Race' ? '<span style="font-size:14px;color:#bbb;">Race day</span>' : badgeHtml}
           </div>
         </div>
@@ -1327,9 +1326,14 @@ function renderPhase(){
         const showKm = plannedIsRun || addedHasRun;
         const isMissedRun = isPast && (plannedIsRun || addedHasRun) && !(parseFloat(kmActual) > 0);
 
+        // Strength duration
+        const strengthMins = s.strengthMins || '';
+        const isStrDay = ['sa','sb','sl','strength'].includes(day.tag)||((s.added||[]).some(t=>['sa','sb','sl','strength'].includes(t)));
+        const strHtml = isStrDay && strengthMins ? `<span class="strava-stat">${strengthMins}min</span>` : '';
+
         const kmColHtml = showKm
-          ? `<div class="km-col">${isMissedRun ? '<span class="missed-label">missed</span>' : ''}<input class="km-actual-input" id="km-${w.n}-${di}" type="text" inputmode="decimal" placeholder="km" value="${escA(String(kmActual))}" onchange="saveKm(${w.n},${di},this.value)" onclick="event.stopPropagation()"></div>`
-          : `<div class="km-col"></div>`;
+          ? `<div class="km-col">${isMissedRun ? '<span class="missed-label">MISSED</span>' : ''}${kmActual ? `<span class="strava-stat">${kmActual}km</span>` : '<span class="strava-stat pending">—</span>'}</div>`
+          : strHtml ? `<div class="km-col">${strHtml}</div>` : `<div class="km-col"></div>`;
 
         // text display: always render as span; editing handled by DOM swap in startTextEdit
         let textDisplay;
@@ -1351,7 +1355,7 @@ function renderPhase(){
             ${addedTagsHtml(s, w.n, di)}
           </div>
           <div class="day-top-right" style="grid-column:4;grid-row:1;position:relative;display:flex;align-items:flex-start;gap:6px;justify-content:flex-end;">
-            ${showKm ? `<div class="km-col">${isMissedRun ? '<span class="missed-label">MISSED</span>' : ''}<input class="km-actual-input" id="km-${w.n}-${di}" type="text" inputmode="decimal" placeholder="km" value="${escA(String(kmActual))}" onchange="saveKm(${w.n},${di},this.value)" onclick="event.stopPropagation()"></div>` : ''}
+            ${showKm ? `<div class="km-col">${isMissedRun ? '<span class="missed-label">MISSED</span>' : ''}${kmActual ? `<span class="strava-stat">${kmActual}km</span>` : '<span class="strava-stat pending">—</span>'}</div>` : strHtml ? `<div class="km-col">${strHtml}</div>` : ''}
             <button class="add-btn" onclick="toggleDropdown(event,${w.n},${di})" title="Add activity">+</button>
             ${dropOpen ? buildDropdown(w.n, di, s) : ''}
           </div>
@@ -1454,7 +1458,7 @@ function updateProgress(wn){
     return (plannedActive||hasAddedRun) && parseFloat(s2.kmActual) > 0;
   }).length;
   const el=document.getElementById(`prog-${wn}`);
-  if(el) el.innerHTML = totalRuns>0 ? `<span class="done-count">${doneRuns}</span>/${totalRuns} runs` : '';
+  if(el) el.innerHTML = totalRuns>0 ? `<span class="done-count">${doneRuns}</span><span style="color:#bbb;font-weight:400;">/${totalRuns} runs</span>` : '';
   // refresh run icons
   const iconRow = document.querySelector(`#icons-${wn}`);
   if(iconRow){
@@ -2047,27 +2051,62 @@ async function stravaSync(){
     const after=Math.floor(new Date('2026-05-11').getTime()/1000);
     const before=Math.floor(new Date('2026-10-11').getTime()/1000);
     let page=1,all=[];
-    while(true){ const r=await fetch(`https://www.strava.com/api/v3/athlete/activities?after=${after}&before=${before}&per_page=100&page=${page}`,{headers:{Authorization:`Bearer ${token}`}}); const acts=await r.json(); if(!Array.isArray(acts)||acts.length===0) break; all=all.concat(acts); page++; if(acts.length<100) break; }
-    const runTypes=new Set(['Run','VirtualRun','TrailRun','Treadmill']);
+    while(true){
+      const r=await fetch(`https://www.strava.com/api/v3/athlete/activities?after=${after}&before=${before}&per_page=100&page=${page}`,{headers:{Authorization:`Bearer ${token}`}});
+      const acts=await r.json();
+      if(!Array.isArray(acts)||acts.length===0) break;
+      all=all.concat(acts); page++;
+      if(acts.length<100) break;
+    }
+
+    // Activity type classification
+    const RUN_TYPES  = new Set(['Run','VirtualRun','TrailRun','Treadmill']);
+    const HIKE_TYPES = new Set(['Hike','Walk']);
+    const STR_TYPES  = new Set(['WeightTraining','Workout','Crossfit','Yoga','Pilates']);
+
     let matched=0;
     all.forEach(act=>{
-      if(!runTypes.has(act.type)&&!runTypes.has(act.sport_type)) return;
+      const type = act.sport_type || act.type || '';
+      const isRun  = RUN_TYPES.has(type);
+      const isHike = HIKE_TYPES.has(type);
+      const isStr  = STR_TYPES.has(type);
+      if(!isRun && !isHike && !isStr) return;
+
       const actDate=new Date(act.start_date_local);
       const dateStr=actDate.toISOString().split('T')[0];
+
       PHASES.forEach(p=>p.weeks.forEach(w=>{
         const wStart=WEEK_STARTS[w.n]; if(!wStart) return;
         w.days.forEach((day,di)=>{
           const dof=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].indexOf(day.d);
           const d=new Date(wStart); d.setDate(d.getDate()+dof);
-          if(d.toISOString().split('T')[0]===dateStr){
-            const k=dk(w.n,di); if(!state[k]) state[k]={};
-            state[k].kmActual=Math.round(act.distance/100)/10; matched++;
+          if(d.toISOString().split('T')[0]!==dateStr) return;
+
+          const k=dk(w.n,di); if(!state[k]) state[k]={};
+          const dayTag = day.tag;
+          const addedTags = state[k].added||[];
+          const isRunDay  = ['easy','workout','ml','long'].includes(dayTag)||addedTags.some(t=>['easy','workout','ml','long'].includes(t));
+          const isHikeDay = dayTag==='hike'||addedTags.includes('hike');
+          const isStrDay  = ['sa','sb','sl','strength'].includes(dayTag)||addedTags.some(t=>['sa','sb','sl','strength'].includes(t));
+
+          if((isRun||isHike) && (isRunDay||isHikeDay)){
+            // Store km
+            state[k].kmActual = Math.round(act.distance/100)/10;
+            state[k].stravaActivity = act.id;
+            matched++;
+          } else if(isStr && isStrDay){
+            // Store duration in minutes
+            const mins = Math.round((act.moving_time||act.elapsed_time||0)/60);
+            state[k].strengthMins = mins;
+            state[k].stravaActivity = act.id;
+            matched++;
           }
         });
       }));
     });
+
     save(); renderPhase(); renderKmTotal();
-    renderStravaBar('ok',`${matched} run${matched!==1?'s':''} synced`);
+    renderStravaBar('ok',`${matched} activit${matched!==1?'ies':'y'} synced`);
   } catch(e){ renderStravaBar('error','Sync failed'); }
 }
 function renderStravaBar(status,msg){
@@ -2075,7 +2114,7 @@ function renderStravaBar(status,msg){
   bar.style.display='flex';
   if(status==='disconnected') bar.innerHTML=`<span class="strava-status">Strava not connected</span><button class="strava-btn" onclick="stravaConnect()">Connect Strava</button>`;
   else if(status==='syncing') bar.innerHTML=`<span class="strava-status">Syncing…</span>`;
-  else if(status==='ok'){ const a=state.stravaTok?.athlete; bar.innerHTML=`<span class="strava-ok">●</span><span class="strava-status">${a?a.firstname+' '+a.lastname+' · ':''}${msg||'Connected'}</span><button class="strava-btn" onclick="stravaSync()">Sync now</button><button style="background:none;border:none;color:#bbb;font-size:12px;cursor:pointer;" onclick="stravaDisconnect()">Disconnect</button>`; }
+  else if(status==='ok'){ bar.style.display='none'; }
   else if(status==='error') bar.innerHTML=`<span class="strava-err">${msg}</span><button class="strava-btn" onclick="stravaSync()">Retry</button>`;
 }
 function stravaConnect(){ window.location.href=stravaAuthUrl(); }
@@ -2125,8 +2164,12 @@ setTimeout(initContentScroll, 300);
 (async()=>{
   const handled = await stravaHandleCallback();
   if(!handled){
-    if(state.stravaTok) renderStravaBar('ok');
-    else renderStravaBar('disconnected');
+    if(state.stravaTok){
+      // Auto-sync silently on every open
+      await stravaSync();
+    } else {
+      renderStravaBar('disconnected');
+    }
   }
 })();
 
@@ -2143,8 +2186,12 @@ document.addEventListener('visibilitychange', ()=>{
     (async()=>{
   const handled = await stravaHandleCallback();
   if(!handled){
-    if(state.stravaTok) renderStravaBar('ok');
-    else renderStravaBar('disconnected');
+    if(state.stravaTok){
+      // Auto-sync silently on every open
+      await stravaSync();
+    } else {
+      renderStravaBar('disconnected');
+    }
   }
 })();
 
