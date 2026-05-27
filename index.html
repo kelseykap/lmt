@@ -115,7 +115,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
   overflow:hidden;
 }
 #content-panel.open{transform:translateY(0);}
-#content-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:transparent;}
+#content-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fffedf;}
 
 /* ── TAB BAR (PLAN / STRENGTH headings) ── */
 #tab-bar{
@@ -125,10 +125,10 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
   flex-shrink:0;
   position:relative;
 }
+.tab-row-bottom{position:relative;}
 #edit-plan-btn{
-  position:absolute;
-  top:calc(36px + env(safe-area-inset-top, 0px));
-  right:24px;
+  margin-left:auto;
+  align-self:flex-end;
   width:32px;height:32px;
   background:transparent;
   border:none;
@@ -138,7 +138,9 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
   border-radius:6px;
   display:flex;align-items:center;justify-content:center;
   transition:color 0.15s, background 0.15s;
-  z-index:201;
+  /* nudge a few px so the pencil rests on the same baseline as the tab text,
+     just above the white tab divider */
+  margin-bottom:2px;
 }
 #edit-plan-btn:hover{color:#fffedf;background:rgba(255,255,255,0.08);}
 #edit-plan-btn:active{transform:scale(0.95);}
@@ -179,9 +181,18 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 .editor-btn.danger{background:transparent;color:#E8501A;border-color:rgba(232,80,26,0.4);}
 .editor-btn.danger:hover{background:rgba(232,80,26,0.1);}
 #plan-editor-body{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:16px 12px 80px;}
-.ed-phase{margin-bottom:24px;background:#222;border-radius:10px;padding:14px;}
-.ed-phase-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
-.ed-phase-head label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);}
+.ed-section{margin-bottom:22px;background:#222;border-radius:10px;padding:14px;}
+.ed-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap;}
+.ed-section-head h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.5);margin:0;}
+.ed-section-foot{margin-top:10px;font-size:11px;color:rgba(255,255,255,0.4);}
+.ed-phases-grid{display:flex;flex-direction:column;gap:6px;}
+.ed-phase-row{display:flex;align-items:center;gap:8px;background:#1a1a1a;border-radius:6px;padding:6px 8px;}
+.ed-phase-row .ed-input{flex-shrink:1;min-width:0;}
+.ed-phase-row .ed-input.wide{flex:1;min-width:120px;}
+.ed-phase-row .ed-input.small{flex:0 0 90px;}
+.ed-phase-num{width:22px;font-size:11px;color:rgba(255,255,255,0.4);font-weight:700;text-align:center;flex-shrink:0;}
+.ed-phase-meta{font-size:11px;color:rgba(255,255,255,0.4);white-space:nowrap;}
+.ed-empty{padding:14px;color:rgba(255,255,255,0.4);font-size:13px;text-align:center;font-style:italic;}
 .ed-input{
   background:#1a1a1a;color:#fffedf;
   border:1px solid rgba(255,255,255,0.1);
@@ -325,7 +336,7 @@ table.ed-table{border-collapse:collapse;width:100%;font-size:12px;min-width:920p
 
 /* ── WEEK CARDS ── */
 .week{background:#fff;border-radius:16px;margin-bottom:18px;overflow:visible;}
-.week.current-week{box-shadow:0 0 0 3px #1a1a1a;}
+.week.current-week{box-shadow:0 0 0 3px #E8501A;}
 .week-hdr{padding:18px 18px 14px;display:flex;flex-direction:column;cursor:pointer;user-select:none;border-radius:16px;}
 .week-hdr:hover{background:#fafafa;}
 .week-hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
@@ -462,7 +473,7 @@ table.ed-table{border-collapse:collapse;width:100%;font-size:12px;min-width:920p
 .strength-page{padding:20px 32px 40px;display:none;border-top:none;box-sizing:border-box;width:100%;}
 .phases-page{padding:20px 32px 40px;display:none;}
 .phase-card{background:#fff;border-radius:16px;padding:20px 20px;margin-bottom:18px;}
-.phase-card.current-phase{box-shadow:0 0 0 3px #1a1a1a;}
+.phase-card.current-phase{box-shadow:0 0 0 3px #E8501A;}
 .phase-card-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#bbb;margin-bottom:6px;}
 .phase-card-title{font-size:17px;font-weight:800;color:#111;letter-spacing:-0.3px;margin-bottom:10px;}
 .phase-card-weeks{font-size:12px;color:#ccc;font-weight:500;margin-bottom:12px;}
@@ -491,7 +502,7 @@ table.ed-table{border-collapse:collapse;width:100%;font-size:12px;min-width:920p
 .str-drag-handle{color:#ddd;font-size:12px;padding-top:1px;flex-shrink:0;cursor:grab;}
 .str-item-text{font-size:13px;color:#3C3C3C;flex:1;line-height:1.45;cursor:pointer;border-bottom:1px dashed transparent;transition:border-color 0.15s;min-width:0;}
 .str-item-text:hover{border-bottom-color:#ccc;}
-.str-item-input{font-size:13px;color:#3C3C3C;border:none;border-bottom:1px solid #aaa;background:transparent;outline:none;font-family:inherit;width:100%;}
+.str-item-input{font-size:13px;color:#3C3C3C;border:none;border-bottom:1px solid #aaa;background:transparent;outline:none;font-family:inherit;flex:1;min-width:0;width:auto;line-height:1.45;padding:0;}
 .str-del{background:none;border:none;cursor:pointer;color:#ddd;font-size:16px;line-height:1;padding:0 2px;transition:color 0.15s;flex-shrink:0;}
 .str-del:hover{color:#E8501A;}
 .str-card-footer{display:flex;justify-content:flex-end;margin-top:8px;}
@@ -539,13 +550,13 @@ table.ed-table{border-collapse:collapse;width:100%;font-size:12px;min-width:920p
       <button class="top-tab active" id="tab-btn-plan" onclick="showTab('plan')">Plan</button>
       <button class="top-tab" id="tab-btn-phases" onclick="showTab('phases')">Phases</button>
     </div>
-    <div class="tab-row">
+    <div class="tab-row tab-row-bottom">
       <button class="top-tab" id="tab-btn-strength" onclick="showTab('strength')">Strength</button>
       <button class="top-tab" id="tab-btn-today" onclick="showTab('today')">Today</button>
+      <button id="edit-plan-btn" onclick="openPlanEditor()" title="Edit plan" aria-label="Edit plan">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+      </button>
     </div>
-    <button id="edit-plan-btn" onclick="openPlanEditor()" title="Edit plan" aria-label="Edit plan">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
-    </button>
   </div>
   <div id="tab-divider"></div>
   <!-- scrollable content -->
@@ -799,8 +810,26 @@ weeks:[
 ]},
 ];
 
+// Normalize a week: legacy travel/cutback/taper/race booleans → single `heading` string.
+// Heading is now a free-text label shown next to the week number ("W4 — Travel" etc.).
+function normalizeWeekHeading(w){
+  if(w.heading == null){
+    if(w.travel)       w.heading = 'Travel';
+    else if(w.cutback) w.heading = 'Cutback';
+    else if(w.taper)   w.heading = 'Taper';
+    else if(w.race)    w.heading = 'Race';
+    else               w.heading = '';
+  }
+  delete w.travel; delete w.cutback; delete w.taper; delete w.race;
+  return w;
+}
+function normalizePhases(phases){
+  phases.forEach(p => p.weeks.forEach(normalizeWeekHeading));
+  return phases;
+}
+
 // Live PHASES is mutable — overridden by state.customPhases if user has edited the plan
-let PHASES = JSON.parse(JSON.stringify(DEFAULT_PHASES));
+let PHASES = normalizePhases(JSON.parse(JSON.stringify(DEFAULT_PHASES)));
 
 // week start dates as timestamps for current-week detection
 // week n starts on the Monday of that week
@@ -808,6 +837,10 @@ let PHASES = JSON.parse(JSON.stringify(DEFAULT_PHASES));
 let WEEK_STARTS = {};
 
 const MONTHS = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+// All week-start Dates are anchored to UTC midnight so toISOString().split('T')[0]
+// returns the intended calendar date regardless of the user's local timezone.
+// (Strava's start_date_local also serialises to the same UTC-anchored YYYY-MM-DD,
+//  so per-day matching during sync is timezone-stable.)
 function parseWeekDate(str, fallbackYear){
   // Accepts "11 May", "1 Jun", "5 Oct" — uses fallbackYear (default 2026)
   if(!str) return null;
@@ -817,25 +850,22 @@ function parseWeekDate(str, fallbackYear){
   const monKey = m[2].slice(0,3);
   const monKeyCap = monKey.charAt(0).toUpperCase() + monKey.slice(1).toLowerCase();
   if(!(monKeyCap in MONTHS)) return null;
-  return new Date(fallbackYear||2026, MONTHS[monKeyCap], day);
+  return new Date(Date.UTC(fallbackYear||2026, MONTHS[monKeyCap], day));
 }
 function formatWeekDate(d){
   if(!d) return '';
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${d.getDate()} ${months[d.getMonth()]}`;
+  return `${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
 }
 function toIsoDate(d){
   if(!d) return '';
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const dd = String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${dd}`;
+  return d.toISOString().slice(0,10);
 }
 function fromIsoDate(s){
   if(!s) return null;
   const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);
   if(!m) return null;
-  return new Date(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10));
+  return new Date(Date.UTC(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10)));
 }
 
 function recomputeWeekStarts(){
@@ -959,7 +989,7 @@ try { state = JSON.parse(localStorage.getItem('lm26_v5') || '{}'); } catch(e){}
 function loadCustomPhases(){
   if(state.customPhases && Array.isArray(state.customPhases) && state.customPhases.length){
     try{
-      PHASES = JSON.parse(JSON.stringify(state.customPhases));
+      PHASES = normalizePhases(JSON.parse(JSON.stringify(state.customPhases)));
       recomputeWeekStarts();
     } catch(e){ console.warn('Failed to load customPhases', e); }
   }
@@ -970,10 +1000,15 @@ loadCustomPhases();
 function resetPlanToDefaults(){
   if(!confirm('Reset the plan to its original PDF schedule? Your logged training data (km, notes, checkmarks) will be kept.')) return;
   delete state.customPhases;
-  PHASES = JSON.parse(JSON.stringify(DEFAULT_PHASES));
+  PHASES = normalizePhases(JSON.parse(JSON.stringify(DEFAULT_PHASES)));
   recomputeWeekStarts();
   save();
   curW = getCurrentWeek();
+  if(editorDraft){
+    // Refresh the editor if it's open
+    editorDraft = JSON.parse(JSON.stringify(PHASES));
+    renderPlanEditor();
+  }
   renderPhase();
   alert('Plan reset to defaults.');
 }
@@ -1630,7 +1665,7 @@ function renderPhase(){
         return parseFloat(s2.kmActual) > 0;
       }).length;
       const isCurrent = w.n === currentWeek;
-      const wlabel = w.travel ? `W${w.n} — Travel` : w.cutback ? `W${w.n} — Cutback` : `W${w.n}`;
+      const wlabel = w.heading ? `W${w.n} — ${esc(w.heading)}` : `W${w.n}`;
 
       let actualTotal = 0;
       w.days.forEach((_,i) => { const v = parseFloat((state[dk(w.n,i)]||{}).kmActual); if(!isNaN(v)) actualTotal += v; });
@@ -1715,14 +1750,22 @@ function renderPhase(){
         const dayOfWeek = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].indexOf(day.d);
         const weekStart = WEEK_STARTS[w.n];
         let dayDate = null;
-        if(weekStart){ dayDate = new Date(weekStart); dayDate.setDate(dayDate.getDate() + dayOfWeek); }
-        const isPast = dayDate ? dayDate < new Date(new Date().toDateString()) : false;
+        if(weekStart){ dayDate = new Date(weekStart); dayDate.setUTCDate(dayDate.getUTCDate() + dayOfWeek); }
+        // Compare on UTC day to match how plan dates are anchored
+        let isPast = false;
+        if(dayDate){
+          const now = new Date();
+          const todayUtcMidnight = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+          isPast = dayDate.getTime() < todayUtcMidnight;
+        }
 
         const RUN_TYPES = ['easy','workout','ml','long'];
         const plannedIsRun = !plannedHidden && RUN_TYPES.includes(day.tag);
         const addedHasRun = (s.added||[]).some(id => RUN_TYPES.includes(id));
         const showKm = plannedIsRun || addedHasRun;
-        const isMissedRun = isPast && (plannedIsRun || addedHasRun) && !(parseFloat(kmActual) > 0);
+        // MISSED = day is past AND there's a planned run AND user hasn't ticked the checkbox.
+        // Strava-synced km no longer auto-clears MISSED — only ticking the box does.
+        const isMissedRun = isPast && (plannedIsRun || addedHasRun) && !s.done;
 
         // Strength duration
         const strengthMins = s.strengthMins || '';
@@ -1885,6 +1928,8 @@ function toggleDone(wn,di,el){
   document.getElementById(`dr-${wn}-${di}`)?.classList.toggle('done',el.checked);
   const main=document.querySelector(`#dr-${wn}-${di} .day-main`);
   if(main) main.style.opacity=el.checked?'0.45':'1';
+  // Ticking/unticking changes MISSED state immediately
+  refreshKmCol(wn, di);
   updateProgress(wn);
 }
 
@@ -1904,18 +1949,28 @@ function refreshKmCol(wn, di){
   const dayOfWeek = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].indexOf(day.d);
   const weekStart = WEEK_STARTS[wn];
   let dayDate = null;
-  if(weekStart){ dayDate = new Date(weekStart); dayDate.setDate(dayDate.getDate()+dayOfWeek); }
-  const isPast = dayDate ? dayDate < new Date(new Date().toDateString()) : false;
+  if(weekStart){ dayDate = new Date(weekStart); dayDate.setUTCDate(dayDate.getUTCDate()+dayOfWeek); }
+  let isPast = false;
+  if(dayDate){
+    const now = new Date();
+    const todayUtcMidnight = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    isPast = dayDate.getTime() < todayUtcMidnight;
+  }
   const kmActual = s.kmActual||'';
-  const isMissed = isPast && showKm && !(parseFloat(kmActual)>0);
+  const isMissed = isPast && showKm && !s.done;
   row.classList.toggle('missed-run', isMissed);
 
-  // Update the top-right cell (grid-column:3, grid-row:1) which has km+add-btn
-  const topRight = row.querySelector('.day-col-right .day-col-km');
-  if(!topRight) return;
-  const dropOpen = openDropdown === `${wn}-${di}`;
-  const missedHtml = isMissed ? `<span class="missed-label">MISSED</span>` : '';
-  topRight.innerHTML = kmHtml;
+  // Update the bottom-right km cell with current MISSED / km / pending state.
+  const kmCell = row.querySelector('.day-col-right .day-col-km');
+  if(!kmCell) return;
+  const fmt = v => { const n=parseFloat(v); if(isNaN(n)) return v; if(n%1===0) return n; return parseFloat(n.toFixed(2)).toString(); };
+  const strengthMins = s.strengthMins || '';
+  const isStrDay = ['sa','sb','sl','strength'].includes(day.tag)||((s.added||[]).some(t=>['sa','sb','sl','strength'].includes(t)));
+  const strHtml = isStrDay && strengthMins ? `<span class="strava-stat">${strengthMins} min</span>` : '';
+  const kmDisplay = showKm
+    ? (isMissed ? `<span class="missed-label">MISSED</span>` : (kmActual ? `<span class="strava-stat">${fmt(kmActual)} km</span>` : `<span class="strava-stat pending">—</span>`))
+    : (strHtml || '');
+  kmCell.innerHTML = kmDisplay;
 }
 
 function refreshTagsArea(wn, di){
@@ -2508,7 +2563,7 @@ async function stravaSync(){
         const wStart=WEEK_STARTS[w.n]; if(!wStart) return;
         w.days.forEach((day,di)=>{
           const dof=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].indexOf(day.d);
-          const d=new Date(wStart); d.setDate(d.getDate()+dof);
+          const d=new Date(wStart); d.setUTCDate(d.getUTCDate()+dof);
           if(d.toISOString().split('T')[0]!==dateStr) return;
 
           const k=dk(w.n,di); if(!state[k]) state[k]={};
@@ -2559,7 +2614,13 @@ async function stravaHandleCallback(){
 }
 
 // ── PLAN EDITOR ──────────────────────────────────────────────────────────────
-let editorDraft = null; // working copy of PHASES while editing
+// Working model while editing:
+//   editorDraft = {
+//     phases: [{label, shortLabel, note}, ...],   // ordered phase definitions
+//     weeks:  [{date, km, heading, days, phaseIdx, n}, ...]  // flat list
+//   }
+// On save we regroup weeks by phaseIdx back into the PHASES shape.
+let editorDraft = null;
 
 const ED_TAG_OPTIONS = [
   {v:'easy',  label:'Easy'},
@@ -2574,9 +2635,64 @@ const ED_TAG_OPTIONS = [
   {v:'race',  label:'Race'},
 ];
 
+// Flatten PHASES into the editor's flat working model
+function flattenPhasesForEditor(phases){
+  const editPhases = phases.map(p => ({
+    label: p.label || '',
+    shortLabel: p.shortLabel || '',
+    note: p.note || '',
+  }));
+  const weeks = [];
+  phases.forEach((p, pi) => {
+    (p.weeks || []).forEach(w => {
+      const c = JSON.parse(JSON.stringify(w));
+      c.phaseIdx = pi;
+      if(c.heading == null) c.heading = '';
+      weeks.push(c);
+    });
+  });
+  return { phases: editPhases, weeks };
+}
+
+// Regroup flat weeks back into a PHASES-shaped array, in the order
+// they appear in editorDraft.weeks (renumbering n sequentially).
+function rebuildPhasesFromDraft(draft){
+  const phases = draft.phases.map(p => ({
+    label: p.label || '',
+    shortLabel: p.shortLabel || '',
+    note: p.note || '',
+    weeks: [],
+  }));
+  let n = 1;
+  draft.weeks.forEach(w => {
+    const pi = Math.min(Math.max(0, w.phaseIdx|0), phases.length-1);
+    const week = {
+      n: n++,
+      date: w.date || '',
+      km: w.km || '',
+      heading: (w.heading || '').trim(),
+      days: (w.days || []).slice(0,7).map((d,i) => ({
+        d: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i],
+        tag: d.tag || 'easy',
+        t: d.t == null ? '' : String(d.t),
+      })),
+    };
+    const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    while(week.days.length < 7){
+      week.days.push({d:dayNames[week.days.length], tag:'easy', t:''});
+    }
+    if(pi >= 0 && phases[pi]) phases[pi].weeks.push(week);
+  });
+  return phases;
+}
+
 function openPlanEditor(){
-  // Deep clone current PHASES for editing
-  editorDraft = JSON.parse(JSON.stringify(PHASES));
+  editorDraft = flattenPhasesForEditor(PHASES);
+  // Default phase if none exist yet
+  if(!editorDraft.phases.length){
+    editorDraft.phases.push({label:'Phase 1', shortLabel:'P1', note:''});
+    editorDraft.weeks.forEach(w => w.phaseIdx = 0);
+  }
   renderPlanEditor();
   document.getElementById('plan-editor').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -2590,43 +2706,23 @@ function closePlanEditor(){
 }
 
 function planEditorDirty(){
-  try{ return JSON.stringify(editorDraft) !== JSON.stringify(PHASES); } catch(e){ return false; }
+  try{
+    return JSON.stringify(rebuildPhasesFromDraft(editorDraft))
+        !== JSON.stringify(PHASES);
+  } catch(e){ return false; }
 }
 
 function savePlanEditor(){
   if(!editorDraft) return;
-  // Validate & normalise: renumber weeks sequentially across phases,
-  // ensure each week has 7 days, ensure numeric `n`.
-  let n = 1;
-  editorDraft.forEach(p => {
-    p.weeks.forEach(w => {
-      w.n = n++;
-      if(!Array.isArray(w.days)) w.days = [];
-      const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-      while(w.days.length < 7){
-        w.days.push({d:dayNames[w.days.length], tag:'easy', t:''});
-      }
-      w.days = w.days.slice(0,7).map((d,i) => ({
-        d: dayNames[i],
-        tag: d.tag || 'easy',
-        t: d.t == null ? '' : String(d.t),
-      }));
-      // Normalise meta booleans
-      ['travel','cutback','taper','race'].forEach(k => {
-        if(!w[k]) delete w[k];
-      });
-    });
-  });
-
-  state.customPhases = editorDraft;
-  PHASES = JSON.parse(JSON.stringify(editorDraft));
+  const newPhases = rebuildPhasesFromDraft(editorDraft);
+  state.customPhases = newPhases;
+  PHASES = JSON.parse(JSON.stringify(newPhases));
   recomputeWeekStarts();
   save();
   curW = getCurrentWeek();
   editorDraft = null;
   document.getElementById('plan-editor').classList.remove('open');
   document.body.style.overflow = '';
-  // Re-render visible tab
   if(activeTopTab === 'phases') renderPhases();
   renderPhase();
   renderKmTotal();
@@ -2635,140 +2731,190 @@ function savePlanEditor(){
 function renderPlanEditor(){
   const el = document.getElementById('plan-editor-body');
   if(!el || !editorDraft) return;
-  let html = `<div class="ed-help">
-    <strong>Quick edits.</strong> Update week dates, totals, headings, and any planned activity. Tag dropdowns change the colour pill that shows up on the plan. Week numbers renumber automatically when you save.
-  </div>`;
 
-  let globalIdx = 0;
-  editorDraft.forEach((phase, pi) => {
-    html += `<div class="ed-phase">
-      <div class="ed-phase-head">
-        <label>Phase ${pi+1}</label>
-        <input class="ed-input wide" type="text" value="${escA(phase.label||'')}" oninput="updPhase(${pi},'label',this.value)" placeholder="Phase label">
-        <input class="ed-input small" type="text" value="${escA(phase.shortLabel||'')}" oninput="updPhase(${pi},'shortLabel',this.value)" placeholder="Short">
-      </div>
-      <div class="ed-table-wrap">
-      <table class="ed-table">
-        <thead>
-          <tr>
-            <th style="width:38px;">#</th>
-            <th style="width:140px;">Start date</th>
-            <th style="width:130px;">Heading</th>
-            <th>Mon</th>
-            <th>Tue</th>
-            <th>Wed</th>
-            <th>Thu</th>
-            <th>Fri</th>
-            <th>Sat</th>
-            <th>Sun</th>
-            <th style="width:90px;">Total km</th>
-            <th style="width:42px;"></th>
-          </tr>
-        </thead>
-        <tbody>`;
-    phase.weeks.forEach((w, wi) => {
-      const parsedDate = parseWeekDate(w.date, 2026);
-      const isoDate = parsedDate ? toIsoDate(parsedDate) : '';
-      const headingVal = w.travel ? 'travel' : w.cutback ? 'cutback' : w.taper ? 'taper' : w.race ? 'race' : '';
-      html += `<tr>
-        <td class="row-hdr"><strong>${globalIdx+1}</strong></td>
-        <td><input class="ed-input med" type="date" value="${isoDate}" onchange="updDate(${pi},${wi},this.value)"></td>
-        <td>
-          <select class="ed-input ed-label-select" onchange="updHeading(${pi},${wi},this.value)">
-            <option value=""${headingVal===''?' selected':''}>Normal</option>
-            <option value="travel"${headingVal==='travel'?' selected':''}>Travel</option>
-            <option value="cutback"${headingVal==='cutback'?' selected':''}>Cutback</option>
-            <option value="taper"${headingVal==='taper'?' selected':''}>Taper</option>
-            <option value="race"${headingVal==='race'?' selected':''}>Race</option>
-          </select>
-        </td>`;
-      w.days.forEach((day, di) => {
-        const tagSel = ED_TAG_OPTIONS.map(o => `<option value="${o.v}"${o.v===day.tag?' selected':''}>${o.label}</option>`).join('');
-        html += `<td><div class="ed-day-cell">
-          <select onchange="updDay(${pi},${wi},${di},'tag',this.value)">${tagSel}</select>
-          <textarea oninput="updDay(${pi},${wi},${di},'t',this.value)" rows="2" placeholder="—">${esc(day.t||'')}</textarea>
-        </div></td>`;
-      });
-      html += `<td><input class="ed-input small" type="text" value="${escA(w.km||'')}" oninput="updWeek(${pi},${wi},'km',this.value)" placeholder="e.g. 60"></td>
-        <td>
-          <div class="ed-row-actions">
-            <button class="ed-row-del" onclick="delWeek(${pi},${wi})" title="Delete week">×</button>
-          </div>
-        </td>
-      </tr>`;
-      globalIdx++;
+  // ── Phases section (top) ──
+  let html = `<div class="ed-section">
+    <div class="ed-section-head">
+      <h3>Phases</h3>
+      <button class="ed-add-week" onclick="edAddPhase()">+ Add phase</button>
+    </div>
+    <div class="ed-phases-grid">`;
+  if(!editorDraft.phases.length){
+    html += `<div class="ed-empty">No phases yet — add one above.</div>`;
+  } else {
+    editorDraft.phases.forEach((p, pi) => {
+      const weekCount = editorDraft.weeks.filter(w => w.phaseIdx === pi).length;
+      html += `<div class="ed-phase-row">
+        <span class="ed-phase-num">${pi+1}</span>
+        <input class="ed-input wide" type="text" value="${escA(p.label||'')}"
+          oninput="edUpdPhase(${pi},'label',this.value)" placeholder="Phase name">
+        <input class="ed-input small" type="text" value="${escA(p.shortLabel||'')}"
+          oninput="edUpdPhase(${pi},'shortLabel',this.value)" placeholder="Short">
+        <span class="ed-phase-meta">${weekCount} week${weekCount===1?'':'s'}</span>
+        <button class="ed-row-del" onclick="edDelPhase(${pi})" title="Delete phase">×</button>
+      </div>`;
     });
-    html += `</tbody></table></div>
-      <div class="ed-phase-foot">
-        <button class="ed-add-week" onclick="addWeek(${pi})">+ Add week to ${esc(phase.shortLabel||phase.label||'phase')}</button>
-        <button class="ed-add-week" onclick="delPhase(${pi})" style="border-color:rgba(232,80,26,0.4);color:#E8501A;">– Remove phase</button>
-      </div>
-    </div>`;
+  }
+  html += `</div></div>`;
+
+  // ── Weeks section (single flat table) ──
+  html += `<div class="ed-section">
+    <div class="ed-section-head">
+      <h3>Weeks</h3>
+      <button class="ed-add-week" onclick="edAddWeek()">+ Add week</button>
+    </div>
+    <div class="ed-table-wrap">
+    <table class="ed-table">
+      <thead>
+        <tr>
+          <th style="width:36px;">#</th>
+          <th style="width:140px;">Start date</th>
+          <th style="width:120px;">Phase</th>
+          <th style="width:140px;">Heading</th>
+          <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th>
+          <th>Fri</th><th>Sat</th><th>Sun</th>
+          <th style="width:80px;">Total km</th>
+          <th style="width:38px;"></th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  if(!editorDraft.weeks.length){
+    html += `<tr><td colspan="13" class="ed-empty">No weeks yet — add one above.</td></tr>`;
+  }
+
+  const phaseOpts = editorDraft.phases.map((p, pi) =>
+    `<option value="${pi}">${esc(p.shortLabel || p.label || ('Phase '+(pi+1)))}</option>`
+  ).join('');
+
+  editorDraft.weeks.forEach((w, wi) => {
+    const parsedDate = parseWeekDate(w.date, 2026);
+    const isoDate = parsedDate ? toIsoDate(parsedDate) : '';
+    const selectedPhase = (w.phaseIdx == null) ? -1 : w.phaseIdx;
+    const phaseSel = editorDraft.phases.length
+      ? `<select class="ed-input" onchange="edUpdWeek(${wi},'phaseIdx',parseInt(this.value,10))">
+           ${editorDraft.phases.map((p, pi) =>
+             `<option value="${pi}"${pi===selectedPhase?' selected':''}>${esc(p.shortLabel || p.label || ('Phase '+(pi+1)))}</option>`
+           ).join('')}
+         </select>`
+      : `<span class="ed-empty">No phases</span>`;
+
+    html += `<tr>
+      <td class="row-hdr"><strong>${wi+1}</strong></td>
+      <td><input class="ed-input med" type="date" value="${isoDate}"
+        onchange="edUpdWeekDate(${wi},this.value)"></td>
+      <td>${phaseSel}</td>
+      <td><input class="ed-input" type="text" list="ed-heading-suggestions"
+        value="${escA(w.heading||'')}"
+        oninput="edUpdWeek(${wi},'heading',this.value)" placeholder=""></td>`;
+    (w.days||[]).forEach((day, di) => {
+      const tagSel = ED_TAG_OPTIONS.map(o =>
+        `<option value="${o.v}"${o.v===day.tag?' selected':''}>${o.label}</option>`
+      ).join('');
+      html += `<td><div class="ed-day-cell">
+        <select onchange="edUpdDay(${wi},${di},'tag',this.value)">${tagSel}</select>
+        <textarea oninput="edUpdDay(${wi},${di},'t',this.value)" rows="2" placeholder="—">${esc(day.t||'')}</textarea>
+      </div></td>`;
+    });
+    html += `<td><input class="ed-input small" type="text" value="${escA(w.km||'')}"
+        oninput="edUpdWeek(${wi},'km',this.value)" placeholder="e.g. 60"></td>
+      <td><button class="ed-row-del" onclick="edDelWeek(${wi})" title="Delete week">×</button></td>
+    </tr>`;
   });
 
-  html += `<div class="ed-phase-bottom">
-    <button class="ed-add-week" onclick="addPhase()">+ Add phase</button>
-    <div style="font-size:12px;color:rgba(255,255,255,0.4);">${editorDraft.reduce((s,p)=>s+p.weeks.length,0)} weeks total</div>
+  html += `</tbody></table></div>
+    <datalist id="ed-heading-suggestions">
+      <option value="Travel">
+      <option value="Cutback">
+      <option value="Taper">
+      <option value="Race">
+    </datalist>
+    <div class="ed-section-foot">${editorDraft.weeks.length} week${editorDraft.weeks.length===1?'':'s'} total</div>
   </div>`;
+
   el.innerHTML = html;
 }
 
-// Per-field update helpers — silently mutate the draft, no rerender (preserves focus)
-function updPhase(pi, key, val){ if(!editorDraft) return; editorDraft[pi][key] = val; }
-function updWeek(pi, wi, key, val){ if(!editorDraft) return; editorDraft[pi].weeks[wi][key] = val; }
-function updDay(pi, wi, di, key, val){
+// ── Editor update helpers (mutate draft silently to preserve focus) ──
+function edUpdPhase(pi, key, val){
   if(!editorDraft) return;
-  editorDraft[pi].weeks[wi].days[di][key] = val;
+  editorDraft.phases[pi][key] = val;
+  // shortLabel/label changes affect the phase dropdown in week rows — light rerender
+  if(key === 'shortLabel' || key === 'label'){ /* don't rerender; user is typing */ }
 }
-function updDate(pi, wi, isoVal){
+function edUpdWeek(wi, key, val){
+  if(!editorDraft) return;
+  editorDraft.weeks[wi][key] = val;
+}
+function edUpdWeekDate(wi, isoVal){
   if(!editorDraft) return;
   const d = fromIsoDate(isoVal);
-  editorDraft[pi].weeks[wi].date = d ? formatWeekDate(d) : isoVal;
+  editorDraft.weeks[wi].date = d ? formatWeekDate(d) : isoVal;
 }
-function updHeading(pi, wi, val){
+function edUpdDay(wi, di, key, val){
   if(!editorDraft) return;
-  const w = editorDraft[pi].weeks[wi];
-  ['travel','cutback','taper','race'].forEach(k => delete w[k]);
-  if(val) w[val] = true;
+  if(!editorDraft.weeks[wi].days[di]) editorDraft.weeks[wi].days[di] = {d:'',tag:'easy',t:''};
+  editorDraft.weeks[wi].days[di][key] = val;
 }
 
-function addWeek(pi){
+function edAddPhase(){
   if(!editorDraft) return;
-  const phase = editorDraft[pi];
-  const last = phase.weeks[phase.weeks.length-1];
+  const newIdx = editorDraft.phases.length;
+  editorDraft.phases.push({
+    label: 'Phase ' + (newIdx+1),
+    shortLabel: 'P' + (newIdx+1),
+    note: '',
+  });
+  renderPlanEditor();
+}
+
+function edDelPhase(pi){
+  if(!editorDraft) return;
+  const inPhase = editorDraft.weeks.filter(w => w.phaseIdx === pi).length;
+  if(editorDraft.phases.length <= 1){
+    alert('Need at least one phase. Add a new one before deleting this.');
+    return;
+  }
+  if(inPhase && !confirm(`Delete this phase? Its ${inPhase} week${inPhase===1?'':'s'} will move to the previous phase.`)){
+    return;
+  }
+  editorDraft.phases.splice(pi, 1);
+  // Reassign weeks: any week pointing at pi or beyond shifts down
+  editorDraft.weeks.forEach(w => {
+    if(w.phaseIdx === pi) w.phaseIdx = Math.max(0, pi-1);
+    else if(w.phaseIdx > pi) w.phaseIdx -= 1;
+  });
+  renderPlanEditor();
+}
+
+function edAddWeek(){
+  if(!editorDraft) return;
+  if(!editorDraft.phases.length){
+    editorDraft.phases.push({label:'Phase 1', shortLabel:'P1', note:''});
+  }
+  const last = editorDraft.weeks[editorDraft.weeks.length - 1];
   let nextDate;
+  let phaseIdx = 0;
   if(last){
     const d = parseWeekDate(last.date, 2026);
-    if(d){ nextDate = new Date(d); nextDate.setDate(nextDate.getDate()+7); }
+    if(d){ nextDate = new Date(d); nextDate.setUTCDate(nextDate.getUTCDate()+7); }
+    if(last.phaseIdx != null) phaseIdx = last.phaseIdx;
   }
   if(!nextDate) nextDate = new Date();
-  const newWeek = {
-    n: 0,
+  editorDraft.weeks.push({
+    phaseIdx,
     date: formatWeekDate(nextDate),
     km: '',
+    heading: '',
     days: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>({d,tag:'easy',t:''})),
-  };
-  phase.weeks.push(newWeek);
+  });
   renderPlanEditor();
 }
 
-function delWeek(pi, wi){
+function edDelWeek(wi){
   if(!editorDraft) return;
   if(!confirm('Delete this week?')) return;
-  editorDraft[pi].weeks.splice(wi,1);
-  renderPlanEditor();
-}
-
-function addPhase(){
-  if(!editorDraft) return;
-  editorDraft.push({label:'New phase', shortLabel:'New', note:'', weeks:[]});
-  renderPlanEditor();
-}
-
-function delPhase(pi){
-  if(!editorDraft) return;
-  if(editorDraft[pi].weeks.length && !confirm(`Delete this phase and its ${editorDraft[pi].weeks.length} week(s)?`)) return;
-  editorDraft.splice(pi,1);
+  editorDraft.weeks.splice(wi, 1);
   renderPlanEditor();
 }
 
