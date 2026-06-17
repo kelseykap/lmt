@@ -178,7 +178,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 .btn-discard{font-size:13px;color:#999;background:none;border:1px solid #ddd;border-radius:6px;padding:5px 14px;cursor:pointer;font-family:inherit;}
 
 /* ── WEEK CARDS ── */
-.week{background:#fffedf;border-radius:16px;margin-bottom:18px;overflow:visible;}
+.week{background:#fff;border-radius:16px;margin-bottom:18px;overflow:visible;}
 .week.current-week{box-shadow:0 0 0 3px #1a1a1a;}
 .week-hdr{padding:18px 18px 14px;display:flex;flex-direction:column;cursor:pointer;user-select:none;border-radius:16px;}
 .week-hdr:hover{background:#fafafa;}
@@ -202,9 +202,9 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 .week-body.open{display:block;}
 
 /* day row — 3 cols: left(day+add) | middle(pills+notes) | right(check+km) */
-.day-row{display:grid;grid-template-columns:52px 1fr 44px;gap:0 2px;padding:12px 16px;border-bottom:1px solid #f0eed8;position:relative;background:#fffedf;z-index:1;}.day-row.open-drop{z-index:50;}
+.day-row{display:grid;grid-template-columns:52px 1fr 44px;gap:0 2px;padding:12px 16px;border-bottom:1px solid #f0f0f0;position:relative;background:#fff;z-index:1;}.day-row.open-drop{z-index:50;}
 .day-row:last-child{border-bottom:none;border-radius:0 0 16px 16px;}
-.day-row.past{background:#f5f1da;}
+.day-row.past{background:#fafafa;}
 .day-col-left{grid-column:1;display:flex;align-items:flex-start;padding-top:2px;}
 .day-col-middle{grid-column:2;display:flex;flex-direction:column;gap:5px;min-width:0;}
 .day-col-right{grid-column:3;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;}
@@ -316,11 +316,11 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 .strength-page{padding:20px 32px 40px;display:none;border-top:none;box-sizing:border-box;width:100%;}
 .phases-page{padding:20px 32px 40px;display:none;}
 .stats-page{padding:20px 32px 40px;display:none;}
-.stats-card{background:#fffedf;border-radius:16px;padding:20px;margin-bottom:14px;}
+.stats-card{background:#fff;border-radius:16px;padding:20px;margin-bottom:14px;}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .stats-stat-num{font-size:32px;font-weight:800;color:#111;letter-spacing:-1px;line-height:1;}
 .stats-stat-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#999;margin-top:4px;}
-.phase-card{background:#fffedf;border-radius:16px;padding:20px 20px;margin-bottom:18px;}
+.phase-card{background:#fff;border-radius:16px;padding:20px 20px;margin-bottom:18px;}
 .phase-card.current-phase{box-shadow:0 0 0 3px #1a1a1a;}
 .phase-card-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#bbb;margin-bottom:6px;}
 .phase-card-title{font-size:17px;font-weight:800;color:#111;letter-spacing:-0.3px;margin-bottom:10px;}
@@ -332,7 +332,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 @container(max-width:900px){.str-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:960px){.str-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:500px){.str-grid{grid-template-columns:1fr;}}
-.str-card{background:#fffedf;border:1px solid #e8d9b8;border-top:none;border-radius:16px;padding:18px 16px 14px;min-height:120px;display:flex;flex-direction:column;}
+.str-card{background:#fff;border:1px solid #e8e8e8;border-top:none;border-radius:16px;padding:18px 16px 14px;min-height:120px;display:flex;flex-direction:column;}
 .str-card.drag-over{border-color:#087E8B;background:#f0fafb;}
 .str-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .str-title{font-size:17px;font-weight:800;color:#3C3C3C;letter-spacing:-0.3px;cursor:pointer;border-bottom:1px dashed transparent;flex:1;margin:0;}
