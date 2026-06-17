@@ -114,7 +114,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
   overflow:hidden;
 }
 #content-panel.open{transform:translateY(0);}
-#content-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#423d3d;}
+#content-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:transparent;}
 
 /* ── TAB BAR (PLAN / STRENGTH headings) ── */
 #tab-bar{
@@ -420,6 +420,7 @@ table.ed-table{border-collapse:collapse;width:100%;font-size:12px;min-width:920p
 /* activities */
 .t-yoga{background:#98b2bf;color:#fffedf;}
 .t-hike{background:#98b2bf;color:#fffedf;}
+.t-mobility{background:#98b2bf;color:#fffedf;}
 .t-swim{background:#98b2bf;color:#fffedf;}
 .t-pilates{background:#fde5dc;color:#E8501A;}
 .t-padel{background:#fde8df;color:#b83c14;}
@@ -448,6 +449,7 @@ table.ed-table{border-collapse:collapse;width:100%;font-size:12px;min-width:920p
 .dp-strength{background:#e2b279;color:#fffedf;}
 .dp-yoga{background:#98b2bf;color:#fffedf;}
 .dp-hike{background:#98b2bf;color:#fffedf;}
+.dp-mobility{background:#98b2bf;color:#fffedf;}
 .dp-swim{background:#98b2bf;color:#fffedf;}
 .dp-pilates{background:#fde5dc;color:#E8501A;}
 .dp-padel{background:#fde8df;color:#b83c14;}
@@ -608,217 +610,172 @@ table.ed-table{border-collapse:collapse;width:100%;font-size:12px;min-width:920p
 
 const DEFAULT_PHASES = [
 {label:'Phase 1 — Base',shortLabel:'Base',
-note:'<strong>Goal:</strong> Adapt to road load. Build mileage gradually. Keep strength consistent. Nearly all running at easy/conversational pace. Week 4 is travel — hike only.',
+note:'<strong>Goal:</strong> Build a strong aerobic foundation. Establish the weekly rhythm — two strength sessions, an easy midweek run, and a long run — and grow volume steadily from 50 to 60 km.',
 weeks:[
-{n:1,date:'11 May',km:'45–50',days:[
+{n:1,date:'15 Jun',km:'50',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'3×10 min threshold, 2 min jog'},
-  {d:'Wed',tag:'easy',t:'8–10 km easy'},
-  {d:'Thu',tag:'easy',t:'12 km easy'},
+  {d:'Tue',tag:'easy',t:'8–10 km easy'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
+  {d:'Thu',tag:'easy',t:'14 km easy'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
-  {d:'Sun',tag:'long',t:'18 km long'},
-]},
-{n:2,date:'18 May',km:'50–55',days:[
-  {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'6×800m'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
-  {d:'Thu',tag:'ml',t:'14 km medium-long'},
-  {d:'Fri',tag:'sb',t:'Strength B'},
-  {d:'Sat',tag:'easy',t:'8 km easy'},
-  {d:'Sun',tag:'long',t:'22 km long'},
-]},
-{n:3,date:'25 May',km:'55–60',days:[
-  {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'20–30 min tempo'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
-  {d:'Thu',tag:'ml',t:'15 km medium-long'},
-  {d:'Fri',tag:'sb',t:'Strength B'},
-  {d:'Sat',tag:'easy',t:'8 km easy'},
-  {d:'Sun',tag:'long',t:'24 km long'},
-]},
-{n:4,date:'1 Jun',km:'8–10',travel:true,days:[
-  {d:'Mon',tag:'hike',t:'Hike'},
-  {d:'Tue',tag:'hike',t:'Hike'},
-  {d:'Wed',tag:'hike',t:'Hike'},
-  {d:'Thu',tag:'hike',t:'Hike'},
-  {d:'Fri',tag:'hike',t:'Hike'},
-  {d:'Sat',tag:'hike',t:'Hike'},
-  {d:'Sun',tag:'hike',t:'Hike'},
-]},
-]},
-{label:'Phase 2 — Build',shortLabel:'Build',
-note:'<strong>Goal:</strong> Marathon-specific volume and intensity. Quality Tuesday workouts, long runs include MP blocks. Run early mornings in July/August heat. Practice fuelling every long run — 60–90g carbs/hour. Week 5 is travel reintroduction.',
-weeks:[
-{n:5,date:'8 Jun',km:'40–45',travel:true,days:[
-  {d:'Mon',tag:'hike',t:'Hike'},
-  {d:'Tue',tag:'hike',t:'Hike'},
-  {d:'Wed',tag:'easy',t:'8 km easy'},
-  {d:'Thu',tag:'ml',t:'12 km medium-long easy'},
-  {d:'Fri',tag:'sa',t:'Strength A'},
-  {d:'Sat',tag:'easy',t:'8–10 km easy reintroduction'},
   {d:'Sun',tag:'long',t:'20 km long'},
 ]},
-{n:6,date:'15 Jun',km:'55–60',days:[
-  {d:'Mon',tag:'sb',t:'Strength B'},
-  {d:'Tue',tag:'workout',t:'5×1 km threshold'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
+{n:2,date:'22 Jun',km:'55',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'3×10 min threshold'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
   {d:'Thu',tag:'ml',t:'16 km medium-long'},
-  {d:'Fri',tag:'sa',t:'Strength A'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
   {d:'Sun',tag:'long',t:'24 km long'},
 ]},
-{n:7,date:'22 Jun',km:'60',days:[
+{n:3,date:'29 Jun',km:'60',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'2×5 km MP'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
-  {d:'Thu',tag:'ml',t:'16 km medium-long'},
+  {d:'Tue',tag:'workout',t:'5×1 km threshold'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
+  {d:'Thu',tag:'ml',t:'18 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
   {d:'Sun',tag:'long',t:'26 km long'},
 ]},
-{n:8,date:'29 Jun',km:'65',days:[
+]},
+{label:'Phase 2 — Build',shortLabel:'Build',
+note:'<strong>Goal:</strong> Introduce marathon-pace and threshold work. Long runs grow past 30 km. Weeks 6 and 10 are cutback weeks — trust the recovery, it is part of the plan.',
+weeks:[
+{n:4,date:'6 Jul',km:'65',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'5×2 km threshold'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Tue',tag:'workout',t:'2×5 km MP'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
   {d:'Thu',tag:'ml',t:'18 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
   {d:'Sun',tag:'long',t:'28 km long'},
 ]},
-{n:9,date:'6 Jul',km:'70',days:[
+{n:5,date:'13 Jul',km:'70',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'10 km tempo'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
-  {d:'Thu',tag:'ml',t:'18 km medium-long'},
+  {d:'Tue',tag:'workout',t:'5×2 km threshold'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
+  {d:'Thu',tag:'ml',t:'20 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
   {d:'Sun',tag:'long',t:'30 km long'},
 ]},
-{n:10,date:'13 Jul',km:'60–65',cutback:true,days:[
+{n:6,date:'20 Jul',km:'55',heading:'Cutback',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'3×4 km MP'},
-  {d:'Wed',tag:'easy',t:'8 km easy'},
+  {d:'Tue',tag:'workout',t:'10 km tempo'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
   {d:'Thu',tag:'ml',t:'16 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
-  {d:'Sat',tag:'easy',t:'6–8 km easy'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
   {d:'Sun',tag:'long',t:'24 km long'},
 ]},
-{n:11,date:'20 Jul',km:'75',days:[
+{n:7,date:'27 Jul',km:'70',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'6×1 mile threshold'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Tue',tag:'workout',t:'3×4 km MP'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
   {d:'Thu',tag:'ml',t:'20 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
-  {d:'Sun',tag:'long',t:'30 km w/ final 8 km MP'},
+  {d:'Sun',tag:'long',t:'30 km long'},
 ]},
-{n:12,date:'27 Jul',km:'80',days:[
+{n:8,date:'3 Aug',km:'75',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'12 km steady tempo'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Tue',tag:'workout',t:'6×1 mile threshold'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
   {d:'Thu',tag:'ml',t:'20 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
   {d:'Sun',tag:'long',t:'32 km long'},
 ]},
-{n:13,date:'3 Aug',km:'75',days:[
+{n:9,date:'10 Aug',km:'75',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'4×5 km MP'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
-  {d:'Thu',tag:'ml',t:'18 km medium-long'},
+  {d:'Tue',tag:'workout',t:'12 km steady tempo'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
+  {d:'Thu',tag:'ml',t:'22 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
   {d:'Sun',tag:'long',t:'28 km progression'},
 ]},
-{n:14,date:'10 Aug',km:'80',days:[
+{n:10,date:'17 Aug',km:'65',heading:'Cutback',days:[
+  {d:'Mon',tag:'sa',t:'Strength A'},
+  {d:'Tue',tag:'workout',t:'4×5 km MP'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
+  {d:'Thu',tag:'ml',t:'18 km medium-long'},
+  {d:'Fri',tag:'sb',t:'Strength B'},
+  {d:'Sat',tag:'easy',t:'8 km easy'},
+  {d:'Sun',tag:'long',t:'26 km long'},
+]},
+]},
+{label:'Phase 3 — Peak',shortLabel:'Peak',
+note:'<strong>Goal:</strong> Maximum marathon-specific fitness. Long runs now include real marathon-pace blocks. This is the hardest phase — execute the sessions, then rest hard between them.',
+weeks:[
+{n:11,date:'24 Aug',km:'80',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
   {d:'Tue',tag:'workout',t:'5×2 km threshold'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
   {d:'Thu',tag:'ml',t:'22 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
   {d:'Sun',tag:'long',t:'32 km w/ 10 km MP'},
 ]},
-]},
-{label:'Phase 3 — Peak',shortLabel:'Peak',
-note:'<strong>Goal:</strong> Race-specific sharpening — muscular fatigue resistance, pace discipline, fuelling mastery. Strength drops to maintenance 1×/week.',
-weeks:[
-{n:15,date:'17 Aug',km:'70',cutback:true,days:[
-  {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'14 km steady'},
-  {d:'Wed',tag:'easy',t:'8 km easy'},
-  {d:'Thu',tag:'ml',t:'18 km medium-long'},
-  {d:'Fri',tag:'sb',t:'Strength B'},
-  {d:'Sat',tag:'easy',t:'6–8 km easy'},
-  {d:'Sun',tag:'long',t:'26 km long'},
-]},
-{n:16,date:'24 Aug',km:'80–85',days:[
+{n:12,date:'31 Aug',km:'80',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
   {d:'Tue',tag:'workout',t:'3×6 km MP'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
   {d:'Thu',tag:'ml',t:'22 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
   {d:'Sun',tag:'long',t:'34 km long'},
 ]},
-{n:17,date:'31 Aug',km:'80',days:[
+{n:13,date:'7 Sep',km:'75',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
   {d:'Tue',tag:'workout',t:'16 km MP continuous'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
   {d:'Thu',tag:'ml',t:'20 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
   {d:'Sun',tag:'long',t:'30 km long'},
 ]},
-{n:18,date:'7 Sep',km:'85',days:[
+{n:14,date:'14 Sep',km:'80',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
   {d:'Tue',tag:'workout',t:'6×2 km threshold'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
-  {d:'Thu',tag:'ml',t:'22 km medium-long'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
+  {d:'Thu',tag:'ml',t:'20 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
   {d:'Sun',tag:'long',t:'32–34 km w/ 10–12 km MP'},
 ]},
-{n:19,date:'14 Sep',km:'80',days:[
+]},
+{label:'Phase 4 — Taper',shortLabel:'Taper',
+note:'<strong>Goal:</strong> Sharpen rather than add fitness. Volume drops fast while intensity stays. Trust the work already done.',
+weeks:[
+{n:15,date:'21 Sep',km:'60',days:[
   {d:'Mon',tag:'sa',t:'Strength A'},
   {d:'Tue',tag:'workout',t:'3×5 km MP'},
-  {d:'Wed',tag:'easy',t:'10 km easy'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
   {d:'Thu',tag:'ml',t:'18 km medium-long'},
   {d:'Fri',tag:'sb',t:'Strength B'},
   {d:'Sat',tag:'easy',t:'8 km easy'},
-  {d:'Sun',tag:'long',t:'32 km progression'},
-]},
-]},
-{label:'Phase 4 — Taper',shortLabel:'Taper',
-note:'<strong>Goal:</strong> Arrive fresh. Volume drops ~25% per week; keep intensity. Trust the training.',
-weeks:[
-{n:20,date:'21 Sep',km:'55–60',days:[
-  {d:'Mon',tag:'sa',t:'Strength A'},
-  {d:'Tue',tag:'workout',t:'10 km MP'},
-  {d:'Wed',tag:'easy',t:'8 km easy'},
-  {d:'Thu',tag:'ml',t:'14 km medium-long'},
-  {d:'Fri',tag:'sb',t:'Strength B'},
-  {d:'Sat',tag:'easy',t:'6 km easy'},
   {d:'Sun',tag:'long',t:'24 km long'},
 ]},
-{n:21,date:'28 Sep',km:'35–45',days:[
-  {d:'Mon',tag:'sl',t:'Light Strength A'},
+{n:16,date:'28 Sep',km:'40',days:[
+  {d:'Mon',tag:'sl',t:'Light Strength'},
   {d:'Tue',tag:'workout',t:'6×1 km threshold'},
-  {d:'Wed',tag:'easy',t:'6–8 km easy'},
-  {d:'Thu',tag:'easy',t:'10 km easy'},
-  {d:'Fri',tag:'rest',t:'Light mobility'},
-  {d:'Sat',tag:'easy',t:'5–6 km easy'},
-  {d:'Sun',tag:'long',t:'16–18 km long'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
+  {d:'Thu',tag:'easy',t:'12 km easy'},
+  {d:'Fri',tag:'mobility',t:'Mobility'},
+  {d:'Sat',tag:'easy',t:'6 km easy'},
+  {d:'Sun',tag:'long',t:'16 km long'},
 ]},
-{n:22,date:'5 Oct',km:'Race',days:[
-  {d:'Mon',tag:'rest',t:'Mobility only'},
+{n:17,date:'5 Oct',km:'55',heading:'Race Week',days:[
+  {d:'Mon',tag:'mobility',t:'Mobility'},
   {d:'Tue',tag:'workout',t:'3×1 km sharp'},
-  {d:'Wed',tag:'easy',t:'5–6 km easy'},
+  {d:'Wed',tag:'easy',t:'8 km easy (optional) + mobility'},
   {d:'Thu',tag:'easy',t:'5 km easy'},
-  {d:'Fri',tag:'rest',t:'Rest — bib pickup at Parque das Nações'},
-  {d:'Sat',tag:'rest',t:'Full rest'},
-  {d:'Sun',tag:'race',t:'RACE DAY — Cascais 08:00'},
+  {d:'Fri',tag:'rest',t:'Rest'},
+  {d:'Sat',tag:'race',t:'Marathon — race day!'},
+  {d:'Sun',tag:'rest',t:'Recovery walk'},
 ]},
 ]},
 ];
@@ -913,17 +870,18 @@ const TAG_HTML = {
   sb:'<span class="tag t-sb">Strength</span>',
   sl:'<span class="tag t-sl">Strength</span>',
   hike:'<span class="tag t-hike">Hike</span>',
+  mobility:'<span class="tag t-mobility">Mobility</span>',
   rest:'<span class="tag t-rest">Rest</span>',
   race:'<span class="tag t-race">Race</span>',
 };
 // tag class for planned tags (for removable display)
 const TAG_CLS = {
   easy:'t-easy',workout:'t-workout',ml:'t-ml',long:'t-long',
-  sa:'t-sa',sb:'t-sb',sl:'t-sl',hike:'t-hike',rest:'t-rest',race:'t-race',
+  sa:'t-sa',sb:'t-sb',sl:'t-sl',hike:'t-hike',mobility:'t-mobility',rest:'t-rest',race:'t-race',
 };
 const TAG_LABEL = {
   easy:'Easy run',workout:'Workout',ml:'Mid-long',long:'Long run',
-  sa:'Strength',sb:'Strength',sl:'Strength',hike:'Hike',rest:'Rest',race:'Race',
+  sa:'Strength',sb:'Strength',sl:'Strength',hike:'Hike',mobility:'Mobility',rest:'Rest',race:'Race',
 };
 
 const EXTRA_OPTIONS = [
@@ -937,6 +895,7 @@ const EXTRA_OPTIONS = [
     {id:'strength',cls:'dp-strength',label:'Strength'},
     {id:'yoga',cls:'dp-yoga',label:'Yoga'},
     {id:'hike',cls:'dp-hike',label:'Hike'},
+    {id:'mobility',cls:'dp-mobility',label:'Mobility'},
     {id:'swim',cls:'dp-swim',label:'Swim'},
     {id:'pilates',cls:'dp-pilates',label:'Pilates'},
     {id:'padel',cls:'dp-padel',label:'Padel'},
@@ -945,11 +904,11 @@ const EXTRA_OPTIONS = [
 ];
 const ADDED_CLS = {
   easy:'t-easy',workout:'t-workout',ml:'t-ml',long:'t-long',
-  strength:'t-strength',yoga:'t-yoga',hike:'t-hike',swim:'t-swim',pilates:'t-pilates',padel:'t-padel',rest:'t-rest',
+  strength:'t-strength',yoga:'t-yoga',hike:'t-hike',mobility:'t-mobility',swim:'t-swim',pilates:'t-pilates',padel:'t-padel',rest:'t-rest',
 };
 const ADDED_LABEL = {
   easy:'Easy run',workout:'Workout',ml:'Mid-long',long:'Long run',
-  strength:'Strength',yoga:'Yoga',hike:'Hike',swim:'Swim',pilates:'Pilates',padel:'Padel',rest:'Rest',
+  strength:'Strength',yoga:'Yoga',hike:'Hike',mobility:'Mobility',swim:'Swim',pilates:'Pilates',padel:'Padel',rest:'Rest',
 };
 
 // Default strength exercises from PDF
@@ -1778,16 +1737,8 @@ function renderPhase(){
       w.days.forEach((_,i) => { const v = parseFloat((state[dk(w.n,i)]||{}).kmActual); if(!isNaN(v)) actualTotal += v; });
       const hasActual = actualTotal > 0;
 
-      // Compute planned km from day texts (parse first number from each run day's default text)
       const RUN_TAGS_KM = ['easy','workout','ml','long'];
-      let plannedKm = 0;
-      w.days.forEach(d => {
-        if(RUN_TAGS_KM.includes(d.tag)){
-          const m = d.t.match(/^(\d+(?:\.\d+)?)/);
-          if(m) plannedKm += parseFloat(m[1]);
-        }
-      });
-      const plannedKmStr = plannedKm > 0 ? `${plannedKm}` : w.km;
+      const plannedKmStr = w.km;
 
       // Compute actual run km and actual total km
       let actualRunKm = 0;
@@ -2435,7 +2386,7 @@ on the days you don't want to.`,
   `Your legs are borrowed.
 The memories are yours to keep.`,
   `Good things take time.
-Great things take 22 weeks.`,
+Great things take 17 weeks.`,
   `In 2026, you ran
 a marathon in Lisbon.
 Write that story.`,
@@ -2737,6 +2688,7 @@ const ED_TAG_OPTIONS = [
   {v:'sb',    label:'Strength B'},
   {v:'sl',    label:'Light str.'},
   {v:'hike',  label:'Hike'},
+  {v:'mobility', label:'Mobility'},
   {v:'rest',  label:'Rest'},
   {v:'race',  label:'Race'},
 ];
@@ -2824,7 +2776,10 @@ function savePlanEditor(){
   state.customPhases = newPhases;
   PHASES = JSON.parse(JSON.stringify(newPhases));
   recomputeWeekStarts();
-  save();
+  state._savedAt = Date.now();
+  try{ localStorage.setItem('lm26_v5', JSON.stringify(state)); } catch(e){}
+  clearTimeout(syncTimer);
+  pushToSupabase(); // push immediately — this is high-value data, don't risk the debounce window
   curW = getCurrentWeek();
   editorDraft = null;
   document.getElementById('plan-editor').classList.remove('open');
