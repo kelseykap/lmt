@@ -2121,7 +2121,7 @@ function renderDropdownPortal(){
     r.left   != null ? `left:${r.left}px`     : '',
     r.right  != null ? `right:${r.right}px`   : '',
   ].filter(Boolean).join(';');
-  portal.innerHTML = `<div class="add-dropdown" id="drop-${wn}-${di}" style="${posStyle}pointer-events:auto;" onclick="event.stopPropagation()">${buildDropdown(wn,di,s)}</div>`;
+  portal.innerHTML = `<div class="add-dropdown" id="drop-${wn}-${di}" style="${posStyle};pointer-events:auto;" onclick="event.stopPropagation()">${buildDropdown(wn,di,s)}</div>`;
 }
 
 function toggleDropdown(evt,wn,di){
