@@ -2013,7 +2013,12 @@ function scrollToPhase(i){
 }
 
 function setPhase(i){ scrollToPhase(i); }
-function toggleWeek(n){ openWeeks[n]=!openWeeks[n]; openDropdown=null; renderPhase(); }
+function toggleWeek(n){
+  openWeeks[n]=!openWeeks[n];
+  openDropdown=null; openDropdownRect=null;
+  renderDropdownPortal(); // reset portal pointer-events back to 'none'
+  renderPhase();
+}
 
 // scroll-spy: watch phase sections and update active nav btn
 function initScrollSpy(){
@@ -2141,13 +2146,15 @@ function togglePlannedTag(wn, di){
   const k=dk(wn,di); if(!state[k]) state[k]={};
   state[k].plannedHidden = !state[k].plannedHidden; forceSyncNow();
   openDropdown = null; // close any open dropdown
+  openDropdownRect = null;
+  // Ensure the portal is fully torn down (pointer-events back to 'none').
+  renderDropdownPortal();
   const tagsEl=document.getElementById(`tags-${wn}-${di}`);
   if(tagsEl){
     const w=findWeek(wn); const day=w?w.days[di]:null; if(!day) return;
     const s=state[k];
     refreshTagsArea(wn,di);
   }
-  // add-btn is in day-col-add, not affected by tag updates
   refreshKmCol(wn,di);
 }
 
@@ -2249,15 +2256,17 @@ function toggleAdded(wn,di,id){
   else state[k].added.push(id);
   forceSyncNow();
   openDropdown = null; // close dropdown after selection
+  openDropdownRect = null;
+  // CRITICAL: tear down the portal properly. Just removing the inner drop element
+  // leaves portal.pointer-events:auto, which makes the full-screen overlay swallow
+  // every subsequent click — i.e. the whole app appears frozen.
+  renderDropdownPortal();
   const tagsEl=document.getElementById(`tags-${wn}-${di}`);
   if(tagsEl){
     const w=findWeek(wn); const day=w?w.days[di]:null; if(!day) return;
     const s=state[k];
     refreshTagsArea(wn,di);
   }
-  // close the dropdown in DOM
-  const drop=document.getElementById(`drop-${wn}-${di}`);
-  if(drop) drop.remove();
   // restore add-btn if it got clobbered
   // add-btn is in day-col-add, not affected by tag updates
   refreshKmCol(wn,di);
@@ -2267,15 +2276,17 @@ function toggleAdded(wn,di,id){
 function removeAdded(evt,wn,di,id){
   evt.stopPropagation();
   const k=dk(wn,di); if(!state[k]) return;
-  state[k].added=(state[k].added||[]).filter(x=>x!==id); save();
+  state[k].added=(state[k].added||[]).filter(x=>x!==id); forceSyncNow();
   openDropdown = null;
+  openDropdownRect = null;
+  // Ensure the portal is fully torn down (pointer-events back to 'none').
+  renderDropdownPortal();
   const tagsEl=document.getElementById(`tags-${wn}-${di}`);
   if(tagsEl){
     const w=findWeek(wn); const day=w?w.days[di]:null; if(!day) return;
     const s=state[k];
     refreshTagsArea(wn,di);
   }
-  // add-btn is in day-col-add, not affected by tag updates
   refreshKmCol(wn,di);
   updateProgress(wn);
 }
