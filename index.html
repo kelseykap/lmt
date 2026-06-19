@@ -1062,6 +1062,10 @@ async function pushToSupabase(){
         'Prefer':'resolution=merge-duplicates,return=minimal',
       },
       body: JSON.stringify(payload),
+      // keepalive lets the request finish in the background even if the tab
+      // is being closed right after — critical for "tick then immediately quit"
+      // patterns where the user expects the tick to persist.
+      keepalive: true,
     });
     if(!res.ok){
       let body = '';
@@ -2069,7 +2073,10 @@ function updateProgress(wn){
 
 function toggleDone(wn,di,el){
   const k=dk(wn,di); if(!state[k]) state[k]={};
-  state[k].done=el.checked; save();
+  state[k].done=el.checked;
+  // Discrete user action — push immediately so a tab close right after
+  // doesn't drop the tick in the debounce window.
+  forceSyncNow();
   document.getElementById(`dr-${wn}-${di}`)?.classList.toggle('done',el.checked);
   const main=document.querySelector(`#dr-${wn}-${di} .day-main`);
   if(main) main.style.opacity=el.checked?'0.45':'1';
@@ -2132,7 +2139,7 @@ function refreshTagsArea(wn, di){
 
 function togglePlannedTag(wn, di){
   const k=dk(wn,di); if(!state[k]) state[k]={};
-  state[k].plannedHidden = !state[k].plannedHidden; save();
+  state[k].plannedHidden = !state[k].plannedHidden; forceSyncNow();
   openDropdown = null; // close any open dropdown
   const tagsEl=document.getElementById(`tags-${wn}-${di}`);
   if(tagsEl){
@@ -2240,7 +2247,7 @@ function toggleAdded(wn,di,id){
   const idx=state[k].added.indexOf(id);
   if(idx>=0) state[k].added.splice(idx,1);
   else state[k].added.push(id);
-  save();
+  forceSyncNow();
   openDropdown = null; // close dropdown after selection
   const tagsEl=document.getElementById(`tags-${wn}-${di}`);
   if(tagsEl){
