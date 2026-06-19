@@ -125,6 +125,28 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
   position:relative;
 }
 .tab-row-bottom{position:relative;z-index:1;}
+/* Sync status chip — small badge top right, only shows when not idle. */
+#sync-status{
+  position:fixed;
+  top:calc(env(safe-area-inset-top, 0px) + 12px);
+  right:12px;
+  z-index:300;
+  display:none;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  border-radius:99px;
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:11px;font-weight:700;
+  letter-spacing:0.06em;text-transform:uppercase;
+  background:rgba(0,0,0,0.55);color:#fffedf;
+  border:none;cursor:pointer;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+#sync-status.ss-saving,#sync-status.ss-loading{background:rgba(0,0,0,0.55);color:#fffedf;}
+#sync-status.ss-saved {background:rgba(8,126,139,0.85);color:#fff;}
+#sync-status.ss-error {background:#E8501A;color:#fff;}
 #edit-plan-btn{
   margin-left:auto;
   align-self:flex-end;
@@ -572,7 +594,7 @@ table.ed-table{border-collapse:collapse;width:100%;font-size:12px;min-width:920p
   </div>
   <div id="tab-divider"></div>
   <!-- scrollable content -->
-  <span id="sync-status" style="display:none;"></span>
+  <button id="sync-status" type="button" title="Tap to retry sync" onclick="forceSyncNow()" style="display:none;"></button>
   <div id="content-scroll">
     <div id="tab-plan">
       <div class="content" id="content"></div>
@@ -597,6 +619,9 @@ table.ed-table{border-collapse:collapse;width:100%;font-size:12px;min-width:920p
   <div id="plan-editor-head">
     <h2>Edit plan</h2>
     <div class="editor-actions">
+      <button class="editor-btn ghost" onclick="exportBackup()" title="Download a JSON backup of all your data">Export</button>
+      <button class="editor-btn ghost" onclick="document.getElementById('import-backup-file').click()" title="Restore from a previously exported backup">Import</button>
+      <input type="file" id="import-backup-file" accept="application/json,.json" style="display:none;" onchange="importBackup(event)">
       <button class="editor-btn danger" onclick="resetPlanToDefaults()">Reset</button>
       <button class="editor-btn ghost" onclick="closePlanEditor()">Cancel</button>
       <button class="editor-btn primary" onclick="savePlanEditor()">Save</button>
@@ -974,7 +999,7 @@ function resetPlanToDefaults(){
   delete state.customPhases;
   PHASES = normalizePhases(JSON.parse(JSON.stringify(DEFAULT_PHASES)));
   recomputeWeekStarts();
-  save();
+  forceSyncNow();
   curW = getCurrentWeek();
   if(editorDraft){
     // Refresh the editor if it's open
@@ -1002,26 +1027,55 @@ function setSyncStatus(s, msg){
   syncStatus = s;
   const el = document.getElementById('sync-status');
   if(!el) return;
-  const icons = {idle:'', saving:'↑', saved:'✓', error:'!', loading:'↓'};
-  const colors = {idle:'#ccc', saving:'#aaa', saved:'#087E8B', error:'#E8501A', loading:'#aaa'};
-  el.textContent = icons[s] + (msg ? ' '+msg : '');
-  el.style.color = colors[s];
+  const labels = {
+    idle:    '',
+    saving:  'Saving…',
+    saved:   'Saved',
+    error:   msg || 'Sync failed',
+    loading: 'Syncing…',
+  };
+  const text = labels[s] != null ? labels[s] : (msg || '');
+  el.textContent = text;
+  el.classList.remove('ss-saving','ss-saved','ss-error','ss-loading','ss-idle');
+  el.classList.add('ss-'+s);
+  // Hide when idle so we don't waste pixels; show otherwise so the user
+  // always knows when something failed instead of finding out by losing data.
+  el.style.display = (s === 'idle' || !text) ? 'none' : 'inline-flex';
 }
 
+// UPSERT via POST + Prefer:resolution=merge-duplicates.
+// PATCH ?id=eq.main silently succeeds with 0 rows changed when no main row exists,
+// which silently dropped every save on devices that had never had the row created.
 async function pushToSupabase(){
   setSyncStatus('saving');
+  const payload = {
+    id: 'main',
+    data: state,
+    updated_at: new Date().toISOString(),
+  };
   try{
-    const res = await fetch(`${SB_URL}/rest/v1/training_log?id=eq.main`, {
-      method:'PATCH',
-      headers:{...SB_HEADERS, 'Content-Type':'application/json'},
-      body: JSON.stringify({data: state, updated_at: new Date().toISOString()}),
+    const res = await fetch(`${SB_URL}/rest/v1/training_log`, {
+      method:'POST',
+      headers:{
+        ...SB_HEADERS,
+        'Content-Type':'application/json',
+        'Prefer':'resolution=merge-duplicates,return=minimal',
+      },
+      body: JSON.stringify(payload),
     });
-    if(!res.ok) throw new Error(res.status);
+    if(!res.ok){
+      let body = '';
+      try{ body = await res.text(); } catch(_){}
+      throw new Error(`HTTP ${res.status} ${body.slice(0,120)}`);
+    }
+    state._syncedAt = Date.now();
     setSyncStatus('saved');
-    setTimeout(()=>setSyncStatus('idle'), 2000);
+    setTimeout(()=>{ if(syncStatus==='saved') setSyncStatus('idle'); }, 2000);
+    return true;
   } catch(e){
-    setSyncStatus('error','sync failed');
-    setTimeout(()=>setSyncStatus('idle'), 4000);
+    console.error('Supabase push failed:', e);
+    setSyncStatus('error', 'sync failed — tap to retry');
+    return false;
   }
 }
 
@@ -1031,7 +1085,7 @@ async function pullFromSupabase(){
     const res = await fetch(`${SB_URL}/rest/v1/training_log?id=eq.main&select=data,updated_at`, {
       headers: {'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`},
     });
-    if(!res.ok) throw new Error(res.status);
+    if(!res.ok) throw new Error('HTTP '+res.status);
     const rows = await res.json();
     if(!rows.length) { setSyncStatus('idle'); return false; }
 
@@ -1042,26 +1096,59 @@ async function pullFromSupabase(){
     if(remoteTime > localTime){
       // Remote is newer — merge into state
       state = {...state, ...remote};
-      localStorage.setItem('lm26_v5', JSON.stringify(state));
+      state._syncedAt = Date.now();
+      try{ localStorage.setItem('lm26_v5', JSON.stringify(state)); } catch(_){}
       setSyncStatus('idle');
-      return true; // caller should re-render
+      // Re-hydrate live PHASES + WEEK_STARTS from the merged remote customPhases
+      // so the UI actually reflects what just came down.
+      loadCustomPhases();
+      curW = getCurrentWeek();
+      return true;
     }
     setSyncStatus('idle');
     return false;
   } catch(e){
-    setSyncStatus('error','offline');
-    setTimeout(()=>setSyncStatus('idle'), 3000);
+    console.error('Supabase pull failed:', e);
+    setSyncStatus('error', 'offline');
+    setTimeout(()=>{ if(syncStatus==='error') setSyncStatus('idle'); }, 3000);
     return false;
   }
 }
 
+// Standard save — writes locally now, pushes to Supabase after a short debounce
+// so rapid typing doesn't flood the network.
 function save(){
   state._savedAt = Date.now();
   try{ localStorage.setItem('lm26_v5', JSON.stringify(state)); } catch(e){}
-  // Debounce remote push — wait 1.5s after last change
   clearTimeout(syncTimer);
-  syncTimer = setTimeout(pushToSupabase, 1500);
+  syncTimer = setTimeout(pushToSupabase, 1200);
 }
+
+// Force-flush: bypasses the debounce. Used by structural edits where the user
+// would reasonably expect "saved" immediately — plan editor save, strength
+// block add/delete/rename, drag-drop, reset.
+function forceSyncNow(){
+  state._savedAt = Date.now();
+  try{ localStorage.setItem('lm26_v5', JSON.stringify(state)); } catch(e){}
+  clearTimeout(syncTimer);
+  return pushToSupabase();
+}
+
+// Final-chance flush: when the tab is about to go away, fire a non-debounced
+// push so the user doesn't lose the last 1.2s of typing.
+function flushOnExit(){
+  if(syncTimer){
+    clearTimeout(syncTimer);
+    syncTimer = null;
+    // Don't await — page may already be unloading. Browsers run pending
+    // requests for ~a few seconds after pagehide on a best-effort basis.
+    pushToSupabase();
+  }
+}
+window.addEventListener('pagehide', flushOnExit);
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'hidden') flushOnExit();
+});
 
 // initialise strength state from defaults if not present
 if(!state.strA) state.strA = [...DEFAULT_STR.A];
@@ -1362,7 +1449,7 @@ function finishStrTitle(key){
   if(sec) sec.title = val;
   state.strSections = sections;
   delete state[`strTitle_editing_${key}`];
-  save();
+  forceSyncNow();
   renderStrength();
 }
 
@@ -1372,7 +1459,7 @@ function addStrBlock(){
   sections.push({key, title:'New Block'});
   state.strSections = sections;
   state[key] = [];
-  save();
+  forceSyncNow();
   renderStrength();
 }
 
@@ -1380,7 +1467,7 @@ function delStrBlock(key){
   const sections = getStrSections().filter(s=>s.key!==key);
   state.strSections = sections;
   delete state[key];
-  save();
+  forceSyncNow();
   renderStrength();
 }
 
@@ -1440,7 +1527,7 @@ function strDrop(evt, destKey){
     state[destKey] = destList;
   }
 
-  save();
+  forceSyncNow();
   renderStrength();
 }
 
@@ -1458,7 +1545,7 @@ function finishStrEdit(key, i){
   inp.style.display='none'; txt.style.display='inline';
 }
 function strEditKey(evt, key, i){ if(evt.key==='Enter'||evt.key==='Escape') finishStrEdit(key,i); }
-function delExercise(key, i){ state[key].splice(i,1); save(); renderStrength(); }
+function delExercise(key, i){ state[key].splice(i,1); forceSyncNow(); renderStrength(); }
 function showAddRow(key){
   const row=document.getElementById(`add-row-${key}`);
   const btn=document.getElementById(`add-btn-${key}`);
@@ -1479,12 +1566,12 @@ function hideAddRow(key){
 function addExercise(key){
   const inp = document.getElementById(`new-ex-${key}`);
   if(!inp||!inp.value.trim()) return;
-  state[key].push(inp.value.trim()); save();
+  state[key].push(inp.value.trim()); forceSyncNow();
   renderStrength();
 }
 function resetStrength(key){
   const map = {strA:'A',strAcore:'Acore',strB:'B',strPC:'PC'};
-  state[key] = [...DEFAULT_STR[map[key]]]; save(); renderStrength();
+  state[key] = [...DEFAULT_STR[map[key]]]; forceSyncNow(); renderStrength();
 }
 
 // ── UNIFIED TEXT (replaces title + note) ─────────────────────────────────────
@@ -2057,6 +2144,12 @@ function togglePlannedTag(wn, di){
   refreshKmCol(wn,di);
 }
 
+// Anchor stores the trigger button's position; final dropdown coords are
+// computed after render against the dropdown's actual measured size so it
+// always lands inside the viewport, regardless of viewport size, scroll,
+// or how many pills the dropdown content has wrapped onto.
+let openDropdownRect = null; // { btnTop, btnBottom, btnLeft, btnRight }
+
 function renderDropdownPortal(){
   const portal = document.getElementById('dropdown-portal');
   if(!portal) return;
@@ -2064,15 +2157,65 @@ function renderDropdownPortal(){
   const [wn,di] = openDropdown.split('-').map(Number);
   const w = findWeek(wn); if(!w){ portal.innerHTML=''; return; }
   const s = state[dk(wn,di)]||{};
+  // Render off-screen first so we can measure the real size, then clamp.
+  portal.style.pointerEvents = 'auto';
+  portal.innerHTML = `<div class="add-dropdown" id="drop-${wn}-${di}"
+    style="top:-9999px;left:-9999px;visibility:hidden;pointer-events:auto;"
+    onclick="event.stopPropagation()">${buildDropdown(wn,di,s)}</div>`;
+
+  const dropEl = document.getElementById(`drop-${wn}-${di}`);
+  if(!dropEl) return;
+  // Defer one frame so layout is finalised before measuring.
+  requestAnimationFrame(() => {
+    positionDropdown(dropEl);
+  });
+}
+
+function positionDropdown(dropEl){
   const r = openDropdownRect;
-  if(!r){ portal.innerHTML=''; return; }
-  const posStyle = [
-    r.top    != null ? `top:${r.top}px`       : '',
-    r.bottom != null ? `bottom:${r.bottom}px` : '',
-    r.left   != null ? `left:${r.left}px`     : '',
-    r.right  != null ? `right:${r.right}px`   : '',
-  ].filter(Boolean).join(';');
-  portal.innerHTML = `<div class="add-dropdown" id="drop-${wn}-${di}" style="${posStyle};pointer-events:auto;" onclick="event.stopPropagation()">${buildDropdown(wn,di,s)}</div>`;
+  if(!r || !dropEl) return;
+  const margin = 8;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const dr = dropEl.getBoundingClientRect();
+  const dropW = dr.width || 210;
+  const dropH = dr.height || 280;
+
+  // Vertical: prefer below the button, fall back to above, then clamp.
+  let top;
+  const spaceBelow = vh - r.btnBottom - margin;
+  const spaceAbove = r.btnTop - margin;
+  if(dropH <= spaceBelow){
+    top = r.btnBottom + 4;
+  } else if(dropH <= spaceAbove){
+    top = r.btnTop - dropH - 4;
+  } else {
+    // No room either way — keep it on screen, prefer larger space
+    if(spaceBelow >= spaceAbove){
+      top = Math.max(margin, vh - dropH - margin);
+    } else {
+      top = margin;
+    }
+  }
+
+  // Horizontal: prefer right-aligned to the button (extending leftward),
+  // fall back to left-aligned, then clamp to viewport.
+  let left;
+  if(r.btnRight - dropW >= margin){
+    left = r.btnRight - dropW;
+  } else if(r.btnLeft + dropW + margin <= vw){
+    left = r.btnLeft;
+  } else {
+    left = Math.max(margin, vw - dropW - margin);
+  }
+
+  // Final clamp on all sides
+  top  = Math.max(margin, Math.min(top,  vh - dropH - margin));
+  left = Math.max(margin, Math.min(left, vw - dropW - margin));
+
+  dropEl.style.top = top + 'px';
+  dropEl.style.left = left + 'px';
+  dropEl.style.visibility = 'visible';
 }
 
 function toggleDropdown(evt,wn,di){
@@ -2082,20 +2225,14 @@ function toggleDropdown(evt,wn,di){
   openDropdown=key;
   const btn = evt.currentTarget;
   const r = btn.getBoundingClientRect();
-  const dropW = 210;
-  const margin = 8;
-  const vw = window.innerWidth;
-  let left = null, right = null;
-  if(r.right - dropW >= margin){ right = vw - r.right; }
-  else { left = Math.max(margin, r.left); }
-  const dropH = 300;
-  let top = null, bottom = null;
-  if(r.bottom + dropH < window.innerHeight - margin){ top = r.bottom + 4; }
-  else { bottom = window.innerHeight - r.top + 4; }
-  openDropdownRect = {top, bottom, left, right};
+  openDropdownRect = {
+    btnTop: r.top,
+    btnBottom: r.bottom,
+    btnLeft: r.left,
+    btnRight: r.right,
+  };
   renderDropdownPortal();
 }
-let openDropdownRect = null;
 
 function toggleAdded(wn,di,id){
   const k=dk(wn,di); if(!state[k]) state[k]={};
@@ -2670,6 +2807,54 @@ async function stravaHandleCallback(){
   state.stravaTok=tok; save(); await stravaSync(); return true;
 }
 
+// ── BACKUP / RESTORE ────────────────────────────────────────────────────────
+// Local recovery path in case sync ever fails — downloads a single JSON file
+// with the full state (logged km, notes, custom phases, strength edits, etc.).
+function exportBackup(){
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `lmt-backup-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 0);
+}
+
+function importBackup(evt){
+  const file = evt.target.files && evt.target.files[0];
+  evt.target.value = ''; // reset so same-name re-import re-fires
+  if(!file) return;
+  if(!confirm('Replace current data with the backup file? Your current logged training will be overwritten.')) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(!parsed || typeof parsed !== 'object') throw new Error('Not a valid backup');
+      state = parsed;
+      state._savedAt = Date.now();
+      try{ localStorage.setItem('lm26_v5', JSON.stringify(state)); } catch(_){}
+      loadCustomPhases();
+      curW = getCurrentWeek();
+      forceSyncNow();
+      // Refresh visible tab
+      renderPhase();
+      if(activeTopTab === 'strength') renderStrength();
+      if(activeTopTab === 'phases')   renderPhases();
+      if(editorDraft){
+        editorDraft = flattenPhasesForEditor(PHASES);
+        renderPlanEditor();
+      }
+      alert('Backup restored.');
+    } catch(e){
+      alert('Could not read that file as a backup: '+e.message);
+    }
+  };
+  reader.onerror = () => alert('Failed to read the file.');
+  reader.readAsText(file);
+}
+
 // ── PLAN EDITOR ──────────────────────────────────────────────────────────────
 // Working model while editing:
 //   editorDraft = {
@@ -2776,10 +2961,7 @@ function savePlanEditor(){
   state.customPhases = newPhases;
   PHASES = JSON.parse(JSON.stringify(newPhases));
   recomputeWeekStarts();
-  state._savedAt = Date.now();
-  try{ localStorage.setItem('lm26_v5', JSON.stringify(state)); } catch(e){}
-  clearTimeout(syncTimer);
-  pushToSupabase(); // push immediately — this is high-value data, don't risk the debounce window
+  forceSyncNow();   // high-value structural edit — push immediately
   curW = getCurrentWeek();
   editorDraft = null;
   document.getElementById('plan-editor').classList.remove('open');
@@ -3026,6 +3208,10 @@ pullFromSupabase().then(updated => {
   if(updated){
     renderPhase();
     renderDailyQuote();
+    renderKmTotal();
+    // refresh whichever tab is currently visible
+    if(activeTopTab === 'strength') renderStrength();
+    if(activeTopTab === 'phases')   renderPhases();
   }
 });
 
@@ -3044,7 +3230,14 @@ document.addEventListener('visibilitychange', ()=>{
   }
 })();
 
-pullFromSupabase().then(updated => { if(updated){ renderPhase(); } });
+pullFromSupabase().then(updated => {
+  if(updated){
+    renderPhase();
+    renderKmTotal();
+    if(activeTopTab === 'strength') renderStrength();
+    if(activeTopTab === 'phases')   renderPhases();
+  }
+});
   }
 });
 
