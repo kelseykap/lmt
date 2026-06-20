@@ -177,15 +177,17 @@ body{font-family:Helvetica,Arial,sans-serif;background:url('lmt-background.png')
 }
 #plan-editor.open{display:flex;}
 #plan-editor-head{
-  display:flex;align-items:center;justify-content:space-between;
+  display:flex;flex-direction:column;
   padding:calc(env(safe-area-inset-top, 0px) + 16px) 20px 12px;
   border-bottom:1px solid rgba(255,255,255,0.08);
   background:#1a1a1a;
   flex-shrink:0;
-  gap:10px;
+  gap:12px;
 }
-#plan-editor-head h2{font-size:18px;font-weight:700;margin:0;letter-spacing:-0.3px;}
-.editor-actions{display:flex;gap:8px;align-items:center;}
+#plan-editor-head h2{font-size:20px;font-weight:700;margin:0;letter-spacing:-0.3px;}
+/* Actions on their own row so nothing is squished on narrow phones. */
+.editor-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.editor-actions-spacer{flex:1;}
 .editor-btn{
   font-size:13px;
   background:#2a2a2a;color:#fffedf;
@@ -620,9 +622,8 @@ table.ed-table{border-collapse:collapse;width:100%;font-size:12px;min-width:920p
     <h2>Edit plan</h2>
     <div class="editor-actions">
       <button class="editor-btn ghost" onclick="exportBackup()" title="Download a JSON backup of all your data">Export</button>
-      <button class="editor-btn ghost" onclick="document.getElementById('import-backup-file').click()" title="Restore from a previously exported backup">Import</button>
-      <input type="file" id="import-backup-file" accept="application/json,.json" style="display:none;" onchange="importBackup(event)">
       <button class="editor-btn danger" onclick="resetPlanToDefaults()">Reset</button>
+      <span class="editor-actions-spacer"></span>
       <button class="editor-btn ghost" onclick="closePlanEditor()">Cancel</button>
       <button class="editor-btn primary" onclick="savePlanEditor()">Save</button>
     </div>
@@ -1605,7 +1606,9 @@ function saveText(wn, di){
   const val = inp.value;
   state[k].text = val;
   delete state[k].textEditing;
-  save();
+  // Discrete action (blur / Enter) — push immediately so quickly closing
+  // the app after editing a day's text doesn't drop the change.
+  forceSyncNow();
   const span = document.createElement('span');
   if(val === ''){
     span.className = 'day-text-display day-text-empty';
@@ -1672,7 +1675,7 @@ function pillDrop(evt, wn, di, idx){
     const arr=[...(state[srcK].added||[])];
     const [m]=arr.splice(src.idx,1);
     arr.splice(idx,0,m);
-    state[srcK].added=arr; save();
+    state[srcK].added=arr; forceSyncNow();
   } else {
     // move to another day: remove from src, add to dest at position idx
     const srcArr=[...(state[srcK].added||[])];
@@ -1682,7 +1685,7 @@ function pillDrop(evt, wn, di, idx){
     const dstArr=[...(state[dstK].added||[])];
     dstArr.splice(idx,0,src.id);
     state[dstK].added=dstArr;
-    save();
+    forceSyncNow();
     // refresh source day tags
     const srcTagsEl=document.getElementById(`tags-${src.wn}-${src.di}`);
     if(srcTagsEl){
@@ -1725,7 +1728,7 @@ function dayDrop(evt, wn, di){
   const dstArr=[...(state[dstK].added||[])];
   dstArr.push(src.id);
   state[dstK].added=dstArr;
-  save();
+  forceSyncNow();
   // refresh both days
   [src,{wn,di}].forEach(({wn:w2,di:d2})=>{
     const tagsEl=document.getElementById(`tags-${w2}-${d2}`);
@@ -2305,7 +2308,7 @@ function savePhaseNote(pi){
   const ta=document.getElementById(`phase-note-ta-${pi}`);
   if(ta) state[`phaseNote_${pi}`]=ta.value;
   state[`phaseNoteEditing_${pi}`]=false;
-  save(); renderPhase();
+  forceSyncNow(); renderPhase();
 }
 function cancelPhaseNote(pi){
   state[`phaseNoteEditing_${pi}`]=false;
