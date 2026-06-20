@@ -1047,13 +1047,21 @@ function setSyncStatus(s, msg){
 // UPSERT via POST + Prefer:resolution=merge-duplicates.
 // PATCH ?id=eq.main silently succeeds with 0 rows changed when no main row exists,
 // which silently dropped every save on devices that had never had the row created.
-async function pushToSupabase(){
+//
+// `opts.keepalive` — only set this from the pagehide flush. Browsers cap keepalive
+//  fetches at 64 KB body and silently fail above that, which becomes very wrong
+//  once the user's state grows (custom phases + logged km + day notes can easily
+//  push past 64 KB). Foreground saves use plain fetch with no size limit.
+async function pushToSupabase(opts){
+  opts = opts || {};
   setSyncStatus('saving');
   const payload = {
     id: 'main',
     data: state,
     updated_at: new Date().toISOString(),
   };
+  const bodyStr = JSON.stringify(payload);
+  const bytes = new Blob([bodyStr]).size;
   try{
     const res = await fetch(`${SB_URL}/rest/v1/training_log`, {
       method:'POST',
@@ -1062,23 +1070,23 @@ async function pushToSupabase(){
         'Content-Type':'application/json',
         'Prefer':'resolution=merge-duplicates,return=minimal',
       },
-      body: JSON.stringify(payload),
-      // keepalive lets the request finish in the background even if the tab
-      // is being closed right after — critical for "tick then immediately quit"
-      // patterns where the user expects the tick to persist.
-      keepalive: true,
+      body: bodyStr,
+      keepalive: !!opts.keepalive,
     });
     if(!res.ok){
       let body = '';
       try{ body = await res.text(); } catch(_){}
+      console.warn(`[LMT sync] push failed: HTTP ${res.status} (${bytes} bytes)`, body.slice(0,200));
       throw new Error(`HTTP ${res.status} ${body.slice(0,120)}`);
     }
     state._syncedAt = Date.now();
+    try{ localStorage.setItem('lm26_v5', JSON.stringify(state)); } catch(_){}
+    console.log(`[LMT sync] saved ${bytes} bytes at ${new Date().toISOString()}`);
     setSyncStatus('saved');
-    setTimeout(()=>{ if(syncStatus==='saved') setSyncStatus('idle'); }, 2000);
+    setTimeout(()=>{ if(syncStatus==='saved') setSyncStatus('idle'); }, 3500);
     return true;
   } catch(e){
-    console.error('Supabase push failed:', e);
+    console.error('[LMT sync] push error:', e);
     setSyncStatus('error', 'sync failed — tap to retry');
     return false;
   }
@@ -1145,9 +1153,10 @@ function flushOnExit(){
   if(syncTimer){
     clearTimeout(syncTimer);
     syncTimer = null;
-    // Don't await — page may already be unloading. Browsers run pending
-    // requests for ~a few seconds after pagehide on a best-effort basis.
-    pushToSupabase();
+    // Don't await — page may already be unloading. keepalive:true tells the
+    // browser to keep the request alive across unload (best-effort, capped at
+    // 64 KB body which is fine for the small delta we have left to flush).
+    pushToSupabase({keepalive: true});
   }
 }
 window.addEventListener('pagehide', flushOnExit);
@@ -1273,7 +1282,7 @@ function savePhasesNote(i){
   const ta = document.getElementById(`phase-note-ta-${i}`);
   if(ta){ state[`phaseNote_${i}`] = ta.value; }
   delete state[`phaseNoteEditing_${i}`];
-  save();
+  forceSyncNow();
   renderPhases();
 }
 
@@ -1545,7 +1554,7 @@ function finishStrEdit(key, i){
   const inp = document.getElementById(`str-inp-${key}-${i}`);
   const txt = document.getElementById(`str-text-${key}-${i}`);
   if(!inp||!txt) return;
-  state[key][i] = inp.value; save();
+  state[key][i] = inp.value; forceSyncNow();
   txt.textContent = inp.value;
   inp.style.display='none'; txt.style.display='inline';
 }
@@ -2296,7 +2305,7 @@ function removeAdded(evt,wn,di,id){
 
 function togglePhaseNote(pi){
   const key = `phaseNoteOpen_${pi}`;
-  state[key] = !state[key]; save();
+  state[key] = !state[key]; forceSyncNow();
   renderPhase();
 }
 
@@ -2817,7 +2826,7 @@ function renderStravaBar(status,msg){
   else if(status==='error') bar.innerHTML=`<span class="strava-err">${msg}</span><button class="strava-btn" onclick="stravaSync()">Retry</button>`;
 }
 function stravaConnect(){ window.location.href=stravaAuthUrl(); }
-function stravaDisconnect(){ delete state.stravaTok; save(); renderStravaBar('disconnected'); }
+function stravaDisconnect(){ delete state.stravaTok; forceSyncNow(); renderStravaBar('disconnected'); }
 async function stravaHandleCallback(){
   const params=new URLSearchParams(window.location.search);
   const code=params.get('code'); if(!code) return false;
