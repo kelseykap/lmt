@@ -1393,6 +1393,9 @@ function getStrSections(){
 }
 
 function renderStrength(){
+  // Snapshot any open inline-edit input first so a mid-typed exercise/title
+  // edit isn't lost when this re-render replaces the strength cards.
+  captureOpenEdits();
   const sections = getStrSections();
   let html = '';
   sections.forEach(sec => {
@@ -1774,6 +1777,9 @@ function plannedTagHtml(tag, wn, di, hidden){
 }
 
 function renderPhase(){
+  // Snapshot any open inline-edit input first so a mid-typed text edit isn't
+  // lost when this re-render rebuilds the day rows.
+  captureOpenEdits();
   const currentWeek = getCurrentWeek();
   let fullHtml = '';
 
@@ -2103,6 +2109,60 @@ function toggleDone(wn,di,el){
 }
 
 function findWeek(wn){ for(const p of PHASES){ const w=p.weeks.find(x=>x.n===wn); if(w) return w; } return null; }
+
+// Snapshot any open inline-edit input into state BEFORE a re-render destroys
+// it. Day-text inputs and strength-item inputs sit inside containers that get
+// replaced wholesale by renderPhase / renderStrength, and if the user is mid-
+// typing when the re-render fires (pull-on-load, pull-on-visibility, dropdown
+// close handler, etc.) the input element vanishes before blur ever fires —
+// which means saveText/finishStrEdit never run and the typed text is lost.
+// Calling this before every full re-render makes those edits survive.
+function captureOpenEdits(){
+  let touched = false;
+  // Day-text inputs in the plan tab
+  document.querySelectorAll('input.day-text-input').forEach(inp => {
+    const m = inp.id && String(inp.id).match(/^dt-(\d+)-(\d+)$/);
+    if(!m) return;
+    const wn = parseInt(m[1],10), di = parseInt(m[2],10);
+    const k = dk(wn, di);
+    if(!state[k]) state[k] = {};
+    const val = inp.value;
+    if(state[k].text !== val){
+      state[k].text = val;
+      touched = true;
+    }
+  });
+  // Strength exercise inputs (only when actually visible / in edit mode)
+  document.querySelectorAll('input.str-item-input').forEach(inp => {
+    if(inp.style && inp.style.display === 'none') return;
+    const m = inp.id && String(inp.id).match(/^str-inp-(.+)-(\d+)$/);
+    if(!m) return;
+    const key = m[1], i = parseInt(m[2],10);
+    if(Array.isArray(state[key]) && state[key][i] !== inp.value){
+      state[key][i] = inp.value;
+      touched = true;
+    }
+  });
+  // Strength block title rename input
+  document.querySelectorAll('input.str-title-input').forEach(inp => {
+    const m = inp.id && String(inp.id).match(/^str-title-inp-(.+)$/);
+    if(!m) return;
+    const key = m[1];
+    const sections = state.strSections;
+    if(Array.isArray(sections)){
+      const sec = sections.find(s => s.key === key);
+      const val = (inp.value||'').trim() || 'Block';
+      if(sec && sec.title !== val){ sec.title = val; touched = true; }
+    }
+  });
+  if(touched){
+    // Persist the rescued edits — debounced is fine; the user will get an
+    // immediate push from whatever triggered the re-render (toggleAdded etc.)
+    // or from the explicit save in the next user action.
+    save();
+  }
+  return touched;
+}
 
 function refreshKmCol(wn, di){
   // With the new 2-row layout, just re-render the whole day row
